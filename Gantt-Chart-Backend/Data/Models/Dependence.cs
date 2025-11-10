@@ -6,6 +6,8 @@ public class Dependence
 {
     public DependencyType Type { get; set; }
     public Guid ChildId { get; set; }
+    public Guid ParentId { get; set; }
     
     public ProjectTask ChildTask { get; set; }
+    public ProjectTask ParentTask { get; set; }
 }
