@@ -1,4 +1,6 @@
-﻿namespace Gantt_Chart_Backend.Data.Models;
+﻿using Gantt_Chart_Backend.Data.Interfaces;
+
+namespace Gantt_Chart_Backend.Data.Models;
 
 public class Project
 {
@@ -8,4 +10,5 @@ public class Project
     public DateTime DeadLine { get; set; }
     public ProjectTask RootTask { get; set; }
     public List<ProjectTask> Tasks { get; set; }
+    public List<IPerformer> Members { get; set; }
 }

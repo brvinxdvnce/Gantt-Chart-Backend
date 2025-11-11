@@ -1,3 +1,14 @@
-﻿namespace Gantt_Chart_Backend.Data.DTOs;
+﻿using Gantt_Chart_Backend.Data.Interfaces;
+using Gantt_Chart_Backend.Data.Models;
 
-public class ProjectTaskDto();
+namespace Gantt_Chart_Backend.Data.DTOs;
+
+public class ProjectTaskDto(
+    Guid ProjectId,
+    string Name,
+    string Description,
+    bool IsCompleted,
+    List<Dependence>  Dependences,
+    DateTime StartTime,
+    DateTime EndTime
+    );
