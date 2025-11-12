@@ -1,7 +1,6 @@
 ﻿namespace Gantt_Chart_Backend.Data.DTOs;
 
-public record UserRequestDto (
-    string NickName,
+public record UserLoginDto(
     string Email,
     string Password
     );

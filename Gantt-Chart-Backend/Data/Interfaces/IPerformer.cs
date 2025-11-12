@@ -2,5 +2,5 @@
 
 public interface IPerformer
 {
-    
+    public Guid Id { get; set; }
 }

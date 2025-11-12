@@ -3,7 +3,7 @@ using Gantt_Chart_Backend.Data.Models;
 
 namespace Gantt_Chart_Backend.Data.DTOs;
 
-public class ProjectTaskDto(
+public record ProjectTaskDto(
     Guid ProjectId,
     string Name,
     string Description,

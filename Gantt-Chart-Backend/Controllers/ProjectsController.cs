@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Gantt_Chart_Backend.Data.DbContext;
+using Gantt_Chart_Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Gantt_Chart_Backend.Controllers;
 
@@ -6,23 +8,59 @@ namespace Gantt_Chart_Backend.Controllers;
 [Route("projects")]
 public class ProjectsController : ControllerBase
 {
-    private readonly ;
+    private readonly IProjectService _projectService;
 
-    [HttpGet]
-    [Route("projects/{projectId}/tasks/{taskId}")]
-    public async Task<IActionResult> GetTask(
-        [FromRoute] string projectId)
+    public ProjectsController(IProjectService projectService)
     {
-
+        _projectService = projectService;
+    }
+    
+    [HttpGet]
+    [Route("/{projectId}/tasks/{taskId}")]
+    public async Task<IActionResult> GetTaskInfo(
+        [FromRoute] string projectId,
+        [FromRoute] string taskId)
+    {
         return Ok();
     }
 
-    [HttpGet]
-    [Route("projects/{projectId}")]
-    public async Task<IActionResult> GetProjectInfo(
-        [FromRoute] string projectId,
-        [FromBody] Guid UserId)
+    public async Task<IActionResult> AddTask()
     {
-        
+        return Ok();
+    }
+
+    public async Task<IActionResult> DeleteTask()
+    {
+        return Ok();
+    }
+
+    public async Task<IActionResult> UpdateTask()
+    {
+        return Ok();
+    }
+    
+    [HttpGet]
+    [Route("projects/{projectId:guid}")]
+    public async Task<IActionResult> GetProjectInfo(
+        [FromRoute] Guid projectId,
+        [FromBody] Guid userId)
+    {
+        var res = await _projectService.GetFullProjectInfo(projectId, userId);
+        return Ok();
+    }
+
+    public async Task<IActionResult> CreateProject()
+    {
+        return Ok();
+    }
+
+    public async Task<IActionResult> UpdateProject()
+    {
+        return Ok();
+    }
+
+    public async Task<IActionResult> DeleteProject()
+    {
+        return Ok();
     }
 }

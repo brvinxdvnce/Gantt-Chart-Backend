@@ -1,6 +1,8 @@
-﻿namespace Gantt_Chart_Backend.Services.Implementations;
+﻿using Gantt_Chart_Backend.Services.Interfaces;
 
-public class AuthenticationService
+namespace Gantt_Chart_Backend.Services.Implementations;
+
+public class AuthenticationService : IAuthenticationService
 {
     
 }
