@@ -1,9 +1,13 @@
 ﻿using Gantt_Chart_Backend.Data.DbContext;
+using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gantt_Chart_Backend.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("projects")]
 public class ProjectsController : ControllerBase
@@ -16,51 +20,48 @@ public class ProjectsController : ControllerBase
     }
     
     [HttpGet]
-    [Route("/{projectId}/tasks/{taskId}")]
-    public async Task<IActionResult> GetTaskInfo(
-        [FromRoute] string projectId,
-        [FromRoute] string taskId)
-    {
-        return Ok();
-    }
-
-    public async Task<IActionResult> AddTask()
-    {
-        return Ok();
-    }
-
-    public async Task<IActionResult> DeleteTask()
-    {
-        return Ok();
-    }
-
-    public async Task<IActionResult> UpdateTask()
-    {
-        return Ok();
-    }
-    
-    [HttpGet]
-    [Route("projects/{projectId:guid}")]
+    [Route("/{projectId}")]
     public async Task<IActionResult> GetProjectInfo(
         [FromRoute] Guid projectId,
-        [FromBody] Guid userId)
+        [FromQuery] Guid userId)
     {
-        var res = await _projectService.GetFullProjectInfo(projectId, userId);
+        try
+        {
+            return Ok(await _projectService.GetFullProjectInfo(projectId, userId));
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
+        catch (ForbidException ex)
+        {
+            return Forbid();
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateProject(
+        [FromQuery] string projectName, 
+        [FromQuery] Guid userId)
+    {
+        await _projectService.CreateProject(projectName, userId);
         return Ok();
     }
 
-    public async Task<IActionResult> CreateProject()
+    [HttpPatch]
+    public async Task<IActionResult> UpdateProject(
+        [FromBody] ProjectDto newProject)
     {
+        await _projectService.UpdateProject(newProject);
         return Ok();
     }
 
-    public async Task<IActionResult> UpdateProject()
+    [HttpDelete]
+    public async Task<IActionResult> DeleteProject(
+        [FromQuery] Guid projectId,
+        [FromQuery] Guid userId)
     {
-        return Ok();
-    }
-
-    public async Task<IActionResult> DeleteProject()
-    {
+        await _projectService.DeleteProject(projectId, userId);
         return Ok();
     }
 }

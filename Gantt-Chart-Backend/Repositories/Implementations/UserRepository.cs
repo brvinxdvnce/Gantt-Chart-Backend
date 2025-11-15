@@ -1,30 +1,12 @@
-﻿using Gantt_Chart_Backend.Data.DbContext;
+﻿/*using Gantt_Chart_Backend.Data.DbContext;
+using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Models;
-using Gantt_Chart_Backend.Repositories.Interfaces;
 
-namespace Gantt_Chart_Backend.Repositories.Implementations;
-
-public class UserRepository : IUserRepository
+public interface IProjectService
 {
-    private readonly GanttPlatformDbContext _dbContext;
-    
-    public UserRepository(GanttPlatformDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-    public async Task AddUser(User user)
-    {
-        
-    }
-
-    public async Task<User> GetUserByEmail(string email)
-    {
-        throw new InvalidOperationException();
-    }
-    
-    public async Task DeleteUser()
-    {
-        
-    }
+    public Task CreateProject();
+    public Task UpdateProject();
+    public Task DeleteProject();
+    public Task<ProjectFullInfoDto> GetFullProjectInfo(Guid projectId, Guid userId);
 }
+*/

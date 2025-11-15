@@ -33,8 +33,6 @@ public class JwtProvider : IJwtProvider
             expires: DateTime.UtcNow.AddHours(_options.ExpireHours)
             );
         
-        var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-        
-        return tokenValue;
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

@@ -20,15 +20,23 @@ public class ProjectService : IProjectService
         throw new NotImplementedException();
     }
 
-    public Task UpdateProject()
+    public Task<Guid> CreateProject(string name, Guid userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteProject()
+    public Task UpdateProject(ProjectDto projectDto)
     {
         throw new NotImplementedException();
     }
+
+    public Task DeleteProject(Guid projectId, Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    
+
 
     public async Task<ProjectResponse<ProjectFullInfoDto>> GetFullProjectInfo 
         (Guid projectId, Guid userId)
@@ -54,101 +62,7 @@ public class ProjectService : IProjectService
         throw new NotImplementedException();
     }
 
-    public Task GetTask()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CreateTask()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateTask()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteTask()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddTaskDependence()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveTaskDependence()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddTaskPerformers()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveTaskPerformers()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CreateTeam()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddTeamMember()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveTeamMember()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddUserToProject(Guid userId, Guid projectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveUserFromProject(Guid userId, Guid projectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task SetUserRoleInProject(Guid userId, Guid projectId, Guid roleId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddDependence()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveDependence()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddUser()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveUser()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task SetUserRole()
-    {
-        throw new NotImplementedException();
-    }
-
+    
     Task<ProjectFullInfoDto> IProjectService.GetFullProjectInfo(Guid projectId, Guid userId)
     {
         throw new NotImplementedException();

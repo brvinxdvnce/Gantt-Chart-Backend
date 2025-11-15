@@ -1,4 +1,5 @@
-﻿using Gantt_Chart_Backend.Data.Enums;
+﻿using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Data.Enums;
 
 namespace Gantt_Chart_Backend.Data.Models;
 
@@ -10,4 +11,14 @@ public class Dependence
     
     public ProjectTask ChildTask { get; set; }
     public ProjectTask ParentTask { get; set; }
+
+    public static Dependence FromDto(DependenceDto dto)
+    {
+        return new Dependence
+        {
+            ChildId = dto.ChildId,
+            ParentId = dto.ParentId,
+            Type = dto.Type
+        };
+    } 
 }

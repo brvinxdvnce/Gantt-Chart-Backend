@@ -47,13 +47,12 @@ public class UsersService : IUsersService
         return newUser.Id;
     }
 
-    public async Task<string> Login (UserRequestDto userDto)
+    public async Task<string> Login (LoginUserRequest userDto)
     {
         var user = await _dbcontext.Users
-            .FirstOrDefaultAsync(u => u.Email == userDto.Email);
+            .FirstOrDefaultAsync(u => u.Email == userDto.Email)
+            ?? throw new NotFoundException();
         
-        if (user is null) throw new ResourceNotFoundException();
-
         if (!_passwordHasher.VerifyPassword(userDto.Password, user.PasswordHash)) 
             throw new InvalidCredentialsException();
         
@@ -68,6 +67,11 @@ public class UsersService : IUsersService
     }
 
     public Task UpdateUser()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateUser(UserRequestDto userDto)
     {
         throw new NotImplementedException();
     }

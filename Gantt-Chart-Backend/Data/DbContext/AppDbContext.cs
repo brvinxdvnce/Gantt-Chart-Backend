@@ -1,16 +1,12 @@
-﻿using Gantt_Chart_Backend.Data.Models;
+﻿using Gantt_Chart_Backend.Data.Configurations;
+using Gantt_Chart_Backend.Data.Models;
 
 namespace Gantt_Chart_Backend.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 
-public class GanttPlatformDbContext :  DbContext
+public class GanttPlatformDbContext(DbContextOptions<GanttPlatformDbContext> options) 
+    :  DbContext(options)
 {
-    public GanttPlatformDbContext(DbContextOptions<GanttPlatformDbContext> options)
-        : base(options)
-    {
-        
-    }
-    
     public DbSet<User> Users { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
@@ -22,6 +18,13 @@ public class GanttPlatformDbContext :  DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration());
+        modelBuilder.ApplyConfiguration(new TeamConfiguration());
+        modelBuilder.ApplyConfiguration(new TaskConfiguration());
+        modelBuilder.ApplyConfiguration(new DependenceConfiguration());
         
     }
 }
+

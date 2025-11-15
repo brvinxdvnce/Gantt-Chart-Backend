@@ -12,16 +12,14 @@ namespace Gantt_Chart_Backend.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;
-    private readonly GanttPlatformDbContext _dbcontext;
-    public UsersController(IUsersService usersService, GanttPlatformDbContext dbcontext)
+    public UsersController(IUsersService usersService)
     {
         _usersService = usersService;
-        _dbcontext = dbcontext;
     }
 
     [HttpGet]
-    [Route("{id}")]
-    public async Task<IActionResult> GetUser(Guid id)
+    [Route("{userId}")]
+    public async Task<IActionResult> GetUser(Guid userId)
     {
         return Ok();
     }
@@ -41,14 +39,15 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Login([FromBody]UserRequestDto user)
+    public async Task<IActionResult> Login([FromBody]LoginUserRequest user, HttpContext httpContext)
     {
         try
         {
             var token = await _usersService.Login(user);
+            httpContext.Response.Cookies.Append("jwt-token", token);
             return Ok(token);
         }
-        catch (ResourceNotFoundException ex)
+        catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
         }
