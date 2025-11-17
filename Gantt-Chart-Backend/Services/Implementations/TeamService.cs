@@ -1,20 +1,21 @@
-﻿using Gantt_Chart_Backend.Services.Interfaces;
+﻿using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Services.Interfaces;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
 
 public class TeamService : ITeamService
 {
-    public Task CreateTeam()
+    public Task<Guid> CreateTeam(TeamDto team)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddTeamMember()
+    public Task AddTeamMember(Guid teamId, Guid memberId)
     {
         throw new NotImplementedException();
     }
 
-    public Task RemoveTeamMember()
+    public Task RemoveTeamMember(Guid teamId, Guid memberId)
     {
         throw new NotImplementedException();
     }

@@ -1,4 +1,5 @@
-﻿using Gantt_Chart_Backend.Data.DbContext;
+﻿using System.Security.Claims;
+using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Exceptions;
@@ -16,7 +17,18 @@ public class UsersController : ControllerBase
     {
         _usersService = usersService;
     }
+    
+    private Guid GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var guid))
+        {
+            throw new UnauthorizedAccessException();
+        }
 
+        return guid;
+    }
+    
     [HttpGet]
     [Route("{userId}")]
     public async Task<IActionResult> GetUser(Guid userId)
@@ -30,7 +42,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            return Ok(_usersService.Register(userRequestDto));
+            return Ok(await _usersService.Register(userRequestDto));
         }
         catch (UserAlreadyExistsException ex)
         {

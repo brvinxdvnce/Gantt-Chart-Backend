@@ -1,8 +1,11 @@
 ﻿using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Enums;
+using Gantt_Chart_Backend.Data.Interfaces;
 using Gantt_Chart_Backend.Data.Models;
+using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
 
@@ -15,56 +18,68 @@ public class ProjectService : IProjectService
         _dbcontext = dbcontext;
     }
 
-    public Task CreateProject()
+    public Task<Guid> CreateProject(ProjectDto project)
     {
-        throw new NotImplementedException();
+        var newProject = new Project
+        {
+            Id =  Guid.NewGuid(),
+            Name = project.Name,
+            CreatorId = project.CreatorId,
+            DeadLine = project.DeadLine ??  DateTime.Now.AddDays(10),
+            RootTask = project.RootTask ??  new ProjectTask(),
+            Members = project.Members ?? new List<IPerformer>()
+        };
+
+        return Task.FromResult(newProject.Id);
     }
 
-    public Task<Guid> CreateProject(string name, Guid userId)
+    public async Task UpdateProject(ProjectDto projectDto)
     {
-        throw new NotImplementedException();
+        var p = await _dbcontext.Projects
+            .FirstOrDefaultAsync(p => p.Id == projectDto.Id)
+            ?? throw new NotFoundException();
+        
+        p.Name = projectDto.Name;
+        p.DeadLine = projectDto.DeadLine;
+        p.CreatorId = projectDto.CreatorId;
+        p.RootTask = projectDto.RootTask;
+        p.Members = projectDto.Members;
+        p.Tasks =  projectDto.Tasks;
+
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task UpdateProject(ProjectDto projectDto)
+    public async Task DeleteProject(Guid projectId, Guid userId)
     {
-        throw new NotImplementedException();
-    }
+        var project = _dbcontext.Projects
+            .FirstOrDefaultAsync(p => p.Id == projectId)
+            ??  throw new NotFoundException();
 
-    public Task DeleteProject(Guid projectId, Guid userId)
-    {
-        throw new NotImplementedException();
+        _dbcontext.Remove(project);
+        await _dbcontext.SaveChangesAsync();
     }
-
     
-
-
-    public async Task<ProjectResponse<ProjectFullInfoDto>> GetFullProjectInfo 
+    public async Task<ProjectOnLoadDto> GetFullProjectInfo 
         (Guid projectId, Guid userId)
     {
-        var project =  await _dbcontext.Projects.FindAsync(projectId);
-        if (project is null)
-            return ProjectResponse<ProjectFullInfoDto>.NotFound();
+        var project =  await _dbcontext.Projects
+            .FirstOrDefaultAsync(p=> p.Id == projectId)
+            ?? throw new NotFoundException();
         
-        var user = project.Members.FirstOrDefault(m => m.Id == userId);
-        if (user is not null)
-        {
-            var projectInfo = new ProjectFullInfoDto()
-            {
-                    //!!!!!!!!!!!!!!!!!
-            };
-            return ProjectResponse<ProjectFullInfoDto>.Success(projectInfo);
-        }
-        else return ProjectResponse<ProjectFullInfoDto>.Forbidden();
-    }
-
-    public Task<IEnumerable<ProjectTask>> GetTasksInProject(Guid projectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    
-    Task<ProjectFullInfoDto> IProjectService.GetFullProjectInfo(Guid projectId, Guid userId)
-    {
-        throw new NotImplementedException();
+        var user = project.Members
+            .FirstOrDefault(m => m.Id == userId)
+            ?? throw new ForbidException();
+        
+        var projectInfo = new ProjectOnLoadDto
+        (
+                project.Id,
+                project.Name,
+                project.Creator,
+                project.DeadLine,
+                project.RootTask,
+                project.Tasks,
+                project.Members
+        );
+        return projectInfo;
     }
 }

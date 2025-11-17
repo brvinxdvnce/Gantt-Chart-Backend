@@ -7,6 +7,6 @@ public interface IProjectService
     public Task CreateProject();
     public Task UpdateProject();
     public Task DeleteProject();
-    public Task<ProjectFullInfoDto> GetFullProjectInfo(Guid projectId, Guid userId);
+    public Task<ProjectOnLoadDto> GetFullProjectInfo(Guid projectId, Guid userId);
 }
 */

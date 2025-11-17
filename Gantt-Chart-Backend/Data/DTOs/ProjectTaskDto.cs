@@ -8,7 +8,7 @@ public record ProjectTaskDto(
     string? Name,
     string? Description,
     bool? IsCompleted,
-    List<Dependence>?  Dependences,
-    DateTime? StartTime,
-    DateTime? EndTime
+    List<Dependence>?  Dependencies,
+    DateTime? StartTime = null,
+    DateTime? EndTime = null
     );

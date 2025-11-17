@@ -1,3 +1,14 @@
-﻿namespace Gantt_Chart_Backend.Data.DTOs;
+﻿using Gantt_Chart_Backend.Data.Interfaces;
+using Gantt_Chart_Backend.Data.Models;
 
-public record ProjectDto();
+namespace Gantt_Chart_Backend.Data.DTOs;
+
+public record ProjectDto(
+    Guid? Id,
+    string Name,
+    Guid CreatorId, 
+    DateTime? DeadLine, 
+    ProjectTask? RootTask, 
+    List<ProjectTask>? Tasks, 
+    List<IPerformer>? Members 
+);

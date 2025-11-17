@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gantt_Chart_Backend.Data.Configurations;
 
-public class TeamConfiguration : IEntityTypeConfiguration<User>
+public class TeamConfiguration : IEntityTypeConfiguration<Team>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<Team> builder)
     {
-        
+        builder.ToTable("team");   
     }
 }

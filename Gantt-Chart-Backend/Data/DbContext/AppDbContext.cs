@@ -18,12 +18,12 @@ public class GanttPlatformDbContext(DbContextOptions<GanttPlatformDbContext> opt
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new ProjectConfiguration());
-        modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration());
-        modelBuilder.ApplyConfiguration(new TeamConfiguration());
-        modelBuilder.ApplyConfiguration(new TaskConfiguration());
-        modelBuilder.ApplyConfiguration(new DependenceConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration          ());
+        modelBuilder.ApplyConfiguration(new ProjectConfiguration       ());
+        modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration ());
+        modelBuilder.ApplyConfiguration(new TeamConfiguration          ());
+        modelBuilder.ApplyConfiguration(new TaskConfiguration          ());
+        modelBuilder.ApplyConfiguration(new DependenceConfiguration    ());
         
     }
 }

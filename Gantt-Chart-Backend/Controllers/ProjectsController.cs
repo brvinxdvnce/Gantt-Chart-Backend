@@ -1,4 +1,5 @@
-﻿using Gantt_Chart_Backend.Data.DbContext;
+﻿using System.Security.Claims;
+using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
@@ -18,13 +19,24 @@ public class ProjectsController : ControllerBase
     {
         _projectService = projectService;
     }
+
+    private Guid GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var guid))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        return guid;
+    }
     
     [HttpGet]
-    [Route("/{projectId}")]
+    [Route("/{projectId:guid}")]
     public async Task<IActionResult> GetProjectInfo(
-        [FromRoute] Guid projectId,
-        [FromQuery] Guid userId)
+        [FromRoute] Guid projectId)
     {
+        Guid userId = GetCurrentUserId();
         try
         {
             return Ok(await _projectService.GetFullProjectInfo(projectId, userId));
@@ -41,11 +53,9 @@ public class ProjectsController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> CreateProject(
-        [FromQuery] string projectName, 
-        [FromQuery] Guid userId)
+        [FromBody] ProjectDto project)
     {
-        await _projectService.CreateProject(projectName, userId);
-        return Ok();
+        return Ok(await _projectService.CreateProject(project));
     }
 
     [HttpPatch]
@@ -57,10 +67,11 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpDelete]
+    [Route("/{projectId:guid}")]
     public async Task<IActionResult> DeleteProject(
-        [FromQuery] Guid projectId,
-        [FromQuery] Guid userId)
+        [FromRoute] Guid projectId)
     {
+        Guid userId = GetCurrentUserId();
         await _projectService.DeleteProject(projectId, userId);
         return Ok();
     }

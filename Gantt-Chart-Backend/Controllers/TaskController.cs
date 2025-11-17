@@ -1,4 +1,6 @@
-﻿using Gantt_Chart_Backend.Data.DTOs;
+﻿using System.Security.Claims;
+using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services;
 using Gantt_Chart_Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -33,35 +35,47 @@ public class TaskController : ControllerBase
         }
     }
 
+    private Guid GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var guid))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        return guid;
+    }
+    
     [HttpDelete]
     [Route("{taskId}")]
     public async Task<IActionResult> DeleteTask([FromRoute] Guid taskId)
     {
-        _taskService.DeleteTask(taskId);
+        await _taskService.DeleteTask(taskId);
         return Ok();
     }
 
     [HttpPatch]
     [Route("{taskId}")]
-    public async Task<IActionResult> UpdateTask(ProjectTaskDto task)
+    public async Task<IActionResult> UpdateTask(
+        [FromRoute] Guid taskId,
+        [FromBody] ProjectTaskDto taskDto)
     {
-        _taskService.UpdateTask(task);
+        await _taskService.UpdateTask(taskDto, taskId);
         return Ok();
     }
     
     [HttpGet]
     [Route("/{taskId}")]
     public async Task<IActionResult> GetTaskInfo(
-        [FromRoute] string projectId,
         [FromRoute] Guid taskId)
     {
-        var task = _taskService.GetTask(taskId);
-        return Ok(task);
+        return Ok(await _taskService.GetTask(taskId));
     }
     
     [HttpPost]
     [Route("/{taskId}/dependence")]
-    public async Task<IActionResult> AddTaskDependence([FromBody] DependenceDto dep)
+    public async Task<IActionResult> AddTaskDependence(
+        [FromBody] DependenceDto dep)
     {
         await _taskService.AddTaskDependence(dep);
         return Ok();
@@ -69,29 +83,37 @@ public class TaskController : ControllerBase
 
     [HttpDelete]
     [Route("/{taskId}/dependence")]
-    public async Task<IActionResult> RemoveTaskDependence([FromBody] DependenceDto dep)
+    public async Task<IActionResult> RemoveTaskDependence(
+        [FromBody] DependenceDto dep)
     {
-        await _taskService.RemoveTaskDependence(dep);
-        return Ok();
+        try
+        {
+            _taskService.RemoveTaskDependence(dep);
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
     }
     
     [HttpPost]
     [Route("/{taskId}/performers")]
     public async Task<IActionResult> AddTaskPerformers(
-        [FromQuery] Guid userId, 
-        [FromQuery] Guid taskId)
+        [FromRoute] Guid taskId)
     {
-        await _taskService.AddTaskPerformers(taskId, userId);
+        var userId = GetCurrentUserId();
+        await _taskService.AddTaskPerformer(taskId, userId);
         return Ok();
     }
 
     [HttpDelete]
     [Route("/{taskId}/performers")]
     public async Task<IActionResult> RemoveTaskPerformers(
-        [FromQuery] Guid userId, 
-        [FromQuery] Guid taskId)
+        [FromRoute] Guid taskId)
     {
-        _taskService.RemoveTaskPerformers(taskId, userId);
+        var userId = GetCurrentUserId(); 
+        await _taskService.RemoveTaskPerformer(taskId, userId);
         return Ok();
     }
 }

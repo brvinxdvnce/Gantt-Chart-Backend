@@ -6,8 +6,8 @@ namespace Gantt_Chart_Backend.Services.Interfaces;
 
 public interface IProjectService
 {
-    public Task<Guid> CreateProject(string name, Guid userId);
+    public Task<Guid> CreateProject(ProjectDto project);
     public Task UpdateProject(ProjectDto projectDto);
     public Task DeleteProject(Guid projectId, Guid userId);
-    public Task<ProjectFullInfoDto> GetFullProjectInfo (Guid projectId, Guid userId);
+    public Task<ProjectOnLoadDto> GetFullProjectInfo (Guid projectId, Guid userId);
 }

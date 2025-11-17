@@ -1,6 +1,8 @@
 ﻿using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Data.Models;
+using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,57 +19,111 @@ public class TaskService : ITaskService
     
     public async Task<IEnumerable<ProjectTask>> GetTasksInProject(Guid projectId)
     {
-        return await _dbcontext.Tasks.ToListAsync();
+        return await _dbcontext.Tasks
+            .Where(t => t.ProjectId == projectId)
+            .ToListAsync();
     }
 
     public async Task<ProjectTask> GetTask(Guid taskId)
     {
-        return await _dbcontext.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+        return await _dbcontext.Tasks
+            .FirstOrDefaultAsync(t => t.Id == taskId) 
+               ?? throw new NotFoundException();
     }
 
     public async Task<Guid> AddTask(ProjectTaskDto task)
     {
         var newTask = new ProjectTask()
         {
-
+            Id = Guid.NewGuid(),
+            Name = task.Name ?? throw new ArgumentException(),
+            Description = task.Description ?? "",
+            IsCompleted = task.IsCompleted ?? false,
+            Dependencies = task.Dependencies ?? new List<Dependence>(),
+            StartTime = task.StartTime ??  DateTime.UtcNow,
+            EndTime = task.EndTime ??  DateTime.UtcNow.AddDays(1),
         };
+        
         await _dbcontext.Tasks.AddAsync(newTask);
         await _dbcontext.SaveChangesAsync();
         
         return newTask.Id;
     }
-
-    public Task UpdateTask(ProjectTaskDto taskId)
+    
+    public async Task UpdateTask(ProjectTaskDto taskDto, Guid taskId)
     {
-        throw new NotImplementedException();
+        var task = await _dbcontext.Tasks
+                       .Include(projectTask => projectTask.Dependencies)
+                       .FirstOrDefaultAsync(t => t.Id == taskId)
+                   ?? throw new NotFoundException();
+        
+        task.Name = taskDto.Name ?? task.Name;
+        task.Description = taskDto.Description ?? task.Description;
+        task.IsCompleted = taskDto.IsCompleted ?? task.IsCompleted;
+        task.Dependencies = taskDto.Dependencies ?? task.Dependencies;
+        task.StartTime = taskDto.StartTime ?? task.StartTime;
+        task.EndTime = taskDto.EndTime ?? task.EndTime;
+
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public bool DeleteTask(Guid taskId)
+    public async Task DeleteTask(Guid taskId)
     {
-         _dbcontext.Tasks.Remove(_dbcontext.Tasks.FirstOrDefault(t => t.Id == taskId));
-         _dbcontext.SaveChanges();
+         _dbcontext.Tasks
+             .Remove(
+                 _dbcontext.Tasks
+                     .FirstOrDefault(t => t.Id == taskId) 
+                 ?? throw new NotFoundException());
          
-        return true;
+         await _dbcontext.SaveChangesAsync();
     }
     
     public async Task AddTaskDependence(DependenceDto depDto)
     {
         var task = await _dbcontext.Tasks.FirstOrDefaultAsync(t => t.Id == depDto.ParentId);
-        task.Dependencies.Add(Dependence.FromDto(depDto));
+        task?.Dependencies.Add(Dependence.FromDto(depDto));
+        
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task RemoveTaskDependence(DependenceDto depDto)
+    public async Task RemoveTaskDependence(DependenceDto depDto)
     {
-        throw new NotImplementedException();
+        var task = await _dbcontext.Tasks
+            .FirstOrDefaultAsync(t => t.Id == depDto.ParentId)
+            ?? throw new NotFoundException();
+        
+        var dep = await _dbcontext.Dependences
+            .FirstOrDefaultAsync(d => d.ParentId == depDto.ParentId)
+            ?? throw new NotFoundException();
+        
+        task?.Dependencies.Remove(Dependence.FromDto(depDto));
+        
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task AddTaskPerformers(Guid taskId, Guid userId, List<Guid> performers)
+    public Task AddTaskPerformer(Guid taskId, Guid userId)
     {
-        throw new NotImplementedException();
+        var task = _dbcontext.Tasks
+            .FirstOrDefault(t => t.Id == taskId) ?? throw new NotFoundException();
+        
+        var user = _dbcontext.ProjectMembers
+            .FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+        
+        task.Performers.Add(user);
+        _dbcontext.SaveChanges();
+        
+        return Task.CompletedTask;
     }
 
-    public Task RemoveTaskPerformers(Guid taskId, Guid userId)
+    public async Task RemoveTaskPerformer(Guid taskId, Guid userId)
     {
-        throw new NotImplementedException();
+        var task = _dbcontext.Tasks
+            .FirstOrDefault(t => t.Id == taskId) ?? throw new NotFoundException();
+        
+        var user = _dbcontext.ProjectMembers
+            .FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+        
+        task.Performers.Remove(user);
+        await _dbcontext.SaveChangesAsync();
     }
 }

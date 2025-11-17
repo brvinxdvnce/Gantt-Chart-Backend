@@ -1,4 +1,6 @@
-﻿using Gantt_Chart_Backend.Services.Interfaces;
+﻿using System.Security.Claims;
+using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,24 +19,36 @@ public class ProjectStuffController : ControllerBase
         _teamService = teamService;
     }
     
-    [HttpPost]
-    public async Task<IActionResult> CreateTeam()
+    private Guid GetCurrentUserId()
     {
-        _teamService.CreateTeam();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var guid))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        return guid;
+    }
+    
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateTeam(TeamDto team)
+    {
+        await _teamService.CreateTeam(team);
         return Ok();
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddTeamMember()
+    public async Task<IActionResult> AddTeamMember(Guid teamId, Guid memberId)
     {
-        _teamService.AddTeamMember();
+        await _teamService.AddTeamMember(teamId, memberId);
         return Ok();
     }
     
     [HttpDelete]
-    public async Task<IActionResult> RemoveTeamMember()
+    public async Task<IActionResult> RemoveTeamMember(Guid teamId, Guid memberId)
     {
-        _teamService.RemoveTeamMember();
+        await _teamService.RemoveTeamMember(teamId, memberId);
         return Ok();
     }
     
@@ -43,7 +57,7 @@ public class ProjectStuffController : ControllerBase
         [FromQuery] Guid userId,
         [FromQuery] Guid projectId)
     {
-        _teamService.AddUserToProject(projectId, userId);
+        await _teamService.AddUserToProject(projectId, userId);
         return Ok();
     }
     
