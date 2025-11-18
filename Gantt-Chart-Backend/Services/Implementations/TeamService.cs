@@ -1,4 +1,5 @@
 ﻿using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Services.Interfaces;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
@@ -30,7 +31,7 @@ public class TeamService : ITeamService
         throw new NotImplementedException();
     }
 
-    public Task SetUserRoleInProject(Guid userId, Guid projectId, Guid roleId)
+    public Task SetUserRoleInProject(Guid userId, Guid projectId, Role roleId)
     {
         throw new NotImplementedException();
     }

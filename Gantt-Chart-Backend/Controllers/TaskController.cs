@@ -22,7 +22,6 @@ public class TaskController : ControllerBase
     }
     
     [HttpGet]
-    [Route("")]
     public async Task<IActionResult> AddTask([FromServices] CreateTaskUseCase useCase)
     {
         try
@@ -31,7 +30,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return Ok();
+            return Ok(ex.Message);
         }
     }
 
@@ -88,7 +87,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            _taskService.RemoveTaskDependence(dep);
+            await _taskService.RemoveTaskDependence(dep);
             return Ok();
         }
         catch (NotFoundException ex)
