@@ -75,4 +75,15 @@ public class UsersService : IUsersService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<ICollection<Permission>> GetUserPermissionsByName(string name)
+    {
+        return await _dbcontext.ProjectMembers
+            //.Include(p => p.User)
+            //.Include(p => p.Permissions)
+            .Where(u => u.User.NickName.Contains(name))
+            .SelectMany(pm => pm.Permissions)
+            .Distinct()
+            .ToListAsync();
+    }
 }

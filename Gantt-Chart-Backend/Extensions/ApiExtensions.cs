@@ -1,6 +1,9 @@
 ﻿using System.Text;
+using Gantt_Chart_Backend.Auth;
+using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Data.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,7 +15,15 @@ public static class ApiExtensions
         this IServiceCollection services,
         IOptions<JwtOptions> jwtOptions)
     {
+        services.AddSingleton<IAuthorizationHandler, PermissionRequirementsHandler>();
         services
+            .AddAuthorization(options =>
+            {
+                options.AddPolicy(Permissions.CreateTask, builder =>
+                {
+                    builder.Requirements.Add(new PermissionRequirements(Permissions.CreateTask));
+                });
+            })
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
@@ -35,9 +46,9 @@ public static class ApiExtensions
                 };
             });
 
-        services.AddScoped<IPermissionService, PermissionService>();
+        //services.AddScoped<IPermissionService, PermissionService>();
         
-        services.AddAuthorization(options =>
+        /*services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminPolicy", policy =>
             {
@@ -52,6 +63,6 @@ public static class ApiExtensions
                 
 
             });
-        });
+        });*/
     }
 }

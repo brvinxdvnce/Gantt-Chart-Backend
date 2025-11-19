@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Gantt_Chart_Backend.Data.DTOs;
+using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services;
 using Gantt_Chart_Backend.Services.Interfaces;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gantt_Chart_Backend.Controllers;
 
-[Authorize]
 [Route("api/tasks")]
 [ApiController]
 public class TaskController : ControllerBase
@@ -32,6 +32,7 @@ public class TaskController : ControllerBase
     }
     
     [HttpGet]
+    [Authorize(Permissions.AddUser)]
     [Route("{taskId}")]
     public async Task<IActionResult> GetTaskInfo(
         [FromRoute] Guid taskId)

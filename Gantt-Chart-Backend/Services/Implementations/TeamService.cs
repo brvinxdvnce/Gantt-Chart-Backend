@@ -1,5 +1,6 @@
 ﻿using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Enums;
+using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Services.Interfaces;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
@@ -35,4 +36,14 @@ public class TeamService : ITeamService
     {
         throw new NotImplementedException();
     }
+
+    public ICollection<Permission> GetMemberPermissions()
+    {
+        throw new NotImplementedException();
+    } 
+    
+    public ICollection<Permission> GetAdminPermissions()
+    {
+        throw new NotImplementedException();
+    } 
 }
