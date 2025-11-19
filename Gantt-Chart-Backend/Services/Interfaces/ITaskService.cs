@@ -6,7 +6,6 @@ namespace Gantt_Chart_Backend.Services.Interfaces;
 
 public interface ITaskService
 {
-    public Task<IEnumerable<ProjectTask>> GetTasksInProject(Guid projectId);
     public Task<ProjectTask> GetTask(Guid taskId);
     public Task<Guid> AddTask(ProjectTaskDto task);
     public Task UpdateTask(ProjectTaskDto taskDto, Guid taskId);

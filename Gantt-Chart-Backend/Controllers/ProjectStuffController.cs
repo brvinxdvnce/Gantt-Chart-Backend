@@ -9,7 +9,7 @@ namespace Gantt_Chart_Backend.Controllers;
 
 
 [Authorize]
-[Route("teams")]
+[Route("api/teams")]
 [ApiController]
 public class ProjectStuffController : ControllerBase
 {

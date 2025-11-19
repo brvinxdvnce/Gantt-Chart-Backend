@@ -35,6 +35,23 @@ public static class ApiExtensions
                 };
             });
 
-        services.AddAuthorization();
+        services.AddScoped<IPermissionService, PermissionService>();
+        
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireClaim("Role", "Admin");
+                
+
+            });
+            
+            options.AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireClaim("Role", "Admin");
+                
+
+            });
+        });
     }
 }

@@ -17,13 +17,6 @@ public class TaskService : ITaskService
         _dbcontext = dbContext;
     }
     
-    public async Task<IEnumerable<ProjectTask>> GetTasksInProject(Guid projectId)
-    {
-        return await _dbcontext.Tasks
-            .Where(t => t.ProjectId == projectId)
-            .ToListAsync();
-    }
-
     public async Task<ProjectTask> GetTask(Guid taskId)
     {
         return await _dbcontext.Tasks

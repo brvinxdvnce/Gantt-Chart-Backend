@@ -11,7 +11,7 @@ namespace Gantt_Chart_Backend.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("projects")]
+[Route("api/projects")]
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
@@ -45,26 +45,28 @@ public class ProjectsController : ControllerBase
     public async Task<IActionResult> GetProjectInfo(
         [FromRoute] Guid projectId)
     {
-        Guid userId = GetCurrentUserId();
+        var userId = GetCurrentUserId();
         try
         {
             return Ok(await _projectService.GetFullProjectInfo(projectId, userId));
         }
         catch (NotFoundException ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
         catch (ForbidException ex)
         {
-            return Forbid();
+            return Forbid(ex.Message);
         }
     }
 
     [HttpPatch]
+    [Route("{projectId:guid}")]
     public async Task<IActionResult> UpdateProject(
+        [FromRoute] Guid projectId,
         [FromBody] ProjectDto newProject)
     {
-        await _projectService.UpdateProject(newProject);
+        await _projectService.UpdateProject(projectId, newProject);
         return Ok();
     }
 

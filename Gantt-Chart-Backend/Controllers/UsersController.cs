@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Gantt_Chart_Backend.Controllers;
 
 [ApiController]
-[Route("users")]
+[Route("api/users")]
 public class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;

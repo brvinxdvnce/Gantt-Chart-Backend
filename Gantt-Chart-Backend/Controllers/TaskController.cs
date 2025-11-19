@@ -8,32 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gantt_Chart_Backend.Controllers;
 
-
 [Authorize]
-[Route("tasks")]
+[Route("api/tasks")]
 [ApiController]
 public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
 
-    public TaskController(IProjectService projectService, ITaskService taskService)
+    public TaskController(ITaskService taskService)
     {
         _taskService = taskService;
     }
     
-    [HttpGet]
-    public async Task<IActionResult> AddTask([FromServices] CreateTaskUseCase useCase)
-    {
-        try
-        {
-            return Ok(useCase.Execute());
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
     private Guid GetCurrentUserId()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -43,6 +29,27 @@ public class TaskController : ControllerBase
         }
 
         return guid;
+    }
+    
+    [HttpGet]
+    [Route("{taskId}")]
+    public async Task<IActionResult> GetTaskInfo(
+        [FromRoute] Guid taskId)
+    {
+        return Ok(await _taskService.GetTask(taskId));
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> AddTask(ProjectTaskDto dto)
+    {
+        try
+        {
+            return Ok(await _taskService.AddTask(dto));
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
     }
     
     [HttpDelete]
@@ -63,16 +70,8 @@ public class TaskController : ControllerBase
         return Ok();
     }
     
-    [HttpGet]
-    [Route("/{taskId}")]
-    public async Task<IActionResult> GetTaskInfo(
-        [FromRoute] Guid taskId)
-    {
-        return Ok(await _taskService.GetTask(taskId));
-    }
-    
     [HttpPost]
-    [Route("/{taskId}/dependence")]
+    [Route("{taskId}/dependence")]
     public async Task<IActionResult> AddTaskDependence(
         [FromBody] DependenceDto dep)
     {
@@ -81,7 +80,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("/{taskId}/dependence")]
+    [Route("{taskId}/dependence")]
     public async Task<IActionResult> RemoveTaskDependence(
         [FromBody] DependenceDto dep)
     {
@@ -97,21 +96,21 @@ public class TaskController : ControllerBase
     }
     
     [HttpPost]
-    [Route("/{taskId}/performers")]
+    [Route("{taskId}/performers")]
     public async Task<IActionResult> AddTaskPerformers(
-        [FromRoute] Guid taskId)
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid userId)
     {
-        var userId = GetCurrentUserId();
         await _taskService.AddTaskPerformer(taskId, userId);
         return Ok();
     }
 
     [HttpDelete]
-    [Route("/{taskId}/performers")]
+    [Route("{taskId}/performers")]
     public async Task<IActionResult> RemoveTaskPerformers(
-        [FromRoute] Guid taskId)
-    {
-        var userId = GetCurrentUserId(); 
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid userId)
+    { 
         await _taskService.RemoveTaskPerformer(taskId, userId);
         return Ok();
     }

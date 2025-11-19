@@ -6,4 +6,6 @@ public class User
     public string NickName { get; set; }
     public string Email { get; set; }
     public string PasswordHash { get; set; }
+    
+    public IEnumerable<ProjectMember> Roles { get; set; }
 }

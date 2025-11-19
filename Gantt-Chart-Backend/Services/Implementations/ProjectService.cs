@@ -33,10 +33,10 @@ public class ProjectService : IProjectService
         return Task.FromResult(newProject.Id);
     }
 
-    public async Task UpdateProject(ProjectDto projectDto)
+    public async Task UpdateProject(Guid projectId, ProjectDto projectDto)
     {
         var p = await _dbcontext.Projects
-            .FirstOrDefaultAsync(p => p.Id == projectDto.Id)
+            .FirstOrDefaultAsync(p => p.Id == projectId)
             ?? throw new NotFoundException();
         
         p.Name = projectDto.Name;
