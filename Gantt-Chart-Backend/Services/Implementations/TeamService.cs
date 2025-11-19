@@ -39,7 +39,8 @@ public class TeamService : ITeamService
 
     public ICollection<Permission> GetMemberPermissions()
     {
-        throw new NotImplementedException();
+        var permissions =  new List<Permission>();
+        permissions.Add(Permissions.AddUser);
     } 
     
     public ICollection<Permission> GetAdminPermissions()

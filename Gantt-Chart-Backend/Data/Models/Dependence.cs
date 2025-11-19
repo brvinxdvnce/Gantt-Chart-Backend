@@ -5,6 +5,7 @@ namespace Gantt_Chart_Backend.Data.Models;
 
 public class Dependence
 {
+    public Guid Id { get; set; }
     public DependencyType Type { get; set; }
     public Guid ChildId { get; set; }
     public Guid ParentId { get; set; }
