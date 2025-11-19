@@ -82,4 +82,9 @@ public class ProjectService : IProjectService
         );
         return projectInfo;
     }
+
+    public Task SetProjectRootTask(Guid projectId, Guid taskId)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Security.Claims;
+using Gantt_Chart_Backend.Auth;
 using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Enums;
+using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +63,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPatch]
+    [Authorize(Permissions.UpdateProject)]
     [Route("{projectId:guid}")]
     public async Task<IActionResult> UpdateProject(
         [FromRoute] Guid projectId,
@@ -71,6 +74,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Permissions.DeleteProject)]
     [Route("{projectId:guid}")]
     public async Task<IActionResult> DeleteProject(
         [FromRoute] Guid projectId)
@@ -80,8 +84,21 @@ public class ProjectsController : ControllerBase
         
         return NoContent();
     }
+
+    [HttpPatch]
+    [Authorize(Permissions.SetRootTask)]
+    [Route("{projectId:guid}/root")]
+    public async Task<IActionResult> SetProjectRootTask(
+        [FromRoute] Guid projectId,
+        [FromQuery] Guid taskId
+        )
+    {
+        await _projectService.SetProjectRootTask(projectId, taskId);
+        return Ok();
+    }
     
     [HttpPost]
+    [Authorize(Permissions.AddUser)]
     [Route("{projectId:guid}/members")]
     public async Task<IActionResult> AddUserToProject(
         [FromQuery] Guid userId,
@@ -92,6 +109,7 @@ public class ProjectsController : ControllerBase
     }
     
     [HttpDelete]
+    [Authorize(Permissions.RemoveUser)]
     [Route("{projectId:guid}/members/{userId:guid}")]
     public async Task<IActionResult> RemoveUserFromProject(
         [FromRoute] Guid userId,
@@ -109,6 +127,7 @@ public class ProjectsController : ControllerBase
     }
     
     [HttpPatch]
+    [Authorize(Permissions.SetUserRole)]
     [Route("{projectId:guid}/members/{userId:guid}")]
     public async Task<IActionResult> SetUserRoleInProject(
         [FromRoute] Guid userId,

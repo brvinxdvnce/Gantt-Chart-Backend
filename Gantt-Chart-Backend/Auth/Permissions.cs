@@ -1,4 +1,4 @@
-﻿namespace Gantt_Chart_Backend.Data.Models;
+﻿namespace Gantt_Chart_Backend.Auth;
 
 public static class Permissions
 {
@@ -24,10 +24,11 @@ public static class Permissions
     public const string DeleteProject = nameof(DeleteProject);
     
     
+    public const string UpdateProject      = nameof(UpdateProject);
     public const string SetRootTask        = nameof(SetRootTask);
     public const string SetProjectDuration = nameof(SetProjectDuration);
     public const string AddUser            = nameof(AddUser);
-    public const string DeleteUser         = nameof(DeleteUser);
-    public const string SetUsersRole       = nameof(SetUsersRole);
+    public const string RemoveUser         = nameof(RemoveUser);
+    public const string SetUserRole        = nameof(SetUserRole);
     
 }

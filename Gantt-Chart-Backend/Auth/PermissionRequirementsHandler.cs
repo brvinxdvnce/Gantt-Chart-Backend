@@ -12,7 +12,8 @@ public class PermissionRequirementsHandler(IServiceScopeFactory serviceScopeFact
         AuthorizationHandlerContext context,
         PermissionRequirements requirement)
     {
-        var userName = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        var userName = context.User.Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         
         using var scope = serviceScopeFactory.CreateScope();
         

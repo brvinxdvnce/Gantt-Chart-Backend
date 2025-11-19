@@ -1,4 +1,5 @@
-﻿using Gantt_Chart_Backend.Data.DTOs;
+﻿using Gantt_Chart_Backend.Auth;
+using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Services.Interfaces;
@@ -81,11 +82,12 @@ public class TeamService : ITeamService
         permissions.Add(new Permission(Permissions.UpdateTeam));
         permissions.Add(new Permission(Permissions.DeleteTeam));
         permissions.Add(new Permission(Permissions.DeleteProject));
+        permissions.Add(new Permission(Permissions.UpdateProject));
         permissions.Add(new Permission(Permissions.SetRootTask));
         permissions.Add(new Permission(Permissions.SetProjectDuration));
         permissions.Add(new Permission(Permissions.AddUser));
-        permissions.Add(new Permission(Permissions.DeleteUser));
-        permissions.Add(new Permission(Permissions.SetUsersRole));
+        permissions.Add(new Permission(Permissions.RemoveUser));
+        permissions.Add(new Permission(Permissions.SetUserRole));
 
         return permissions;
 

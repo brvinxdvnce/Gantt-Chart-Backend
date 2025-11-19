@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Gantt_Chart_Backend.Auth;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Exceptions;
