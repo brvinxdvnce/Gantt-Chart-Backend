@@ -12,7 +12,7 @@ public class ProjectTask
     public DateTime StartTime { get; set; } = DateTime.UtcNow;
     public DateTime EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
 
-    public List<IPerformer> Performers { get; set; } = new();
+    public List<Performer> Performers { get; set; } = new();
     public List<Dependence> Dependencies { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
     

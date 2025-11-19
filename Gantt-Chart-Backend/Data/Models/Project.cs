@@ -12,7 +12,7 @@ public class Project
     public DateTime? DeadLine { get; set; }
     public ProjectTask RootTask { get; set; }
     public List<ProjectTask> Tasks { get; set; }
-    public List<IPerformer> Members { get; set; }
+    public List<Performer> Members { get; set; }
     
     public User Creator { get; set; }
 }

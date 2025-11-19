@@ -1,6 +1,6 @@
 ﻿namespace Gantt_Chart_Backend.Data.Interfaces;
 
-public interface IPerformer
+public abstract class Performer
 {
     public Guid Id { get; set; }
 }

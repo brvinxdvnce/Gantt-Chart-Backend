@@ -3,7 +3,7 @@ using Gantt_Chart_Backend.Data.Interfaces;
 
 namespace Gantt_Chart_Backend.Data.Models;
 
-public class ProjectMember : IPerformer
+public class ProjectMember : Performer
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

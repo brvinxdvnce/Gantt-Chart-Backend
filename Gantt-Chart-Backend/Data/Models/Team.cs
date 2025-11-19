@@ -2,7 +2,7 @@
 
 namespace Gantt_Chart_Backend.Data.Models;
 
-public class Team : IPerformer
+public class Team : Performer
 {
     public Guid Id { get; set; }
     public Guid LeaderId { get; set; }
