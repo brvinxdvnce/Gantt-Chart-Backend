@@ -13,7 +13,9 @@ public class PermissionRequirementsHandler(IServiceScopeFactory serviceScopeFact
         PermissionRequirements requirement)
     {
         var userName = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-        var scope = serviceScopeFactory.CreateScope();
+        
+        using var scope = serviceScopeFactory.CreateScope();
+        
         var usersService = scope.ServiceProvider.GetService<UsersService>();
         var permissions = await usersService.GetUserPermissionsByName(userName);
 
@@ -21,6 +23,5 @@ public class PermissionRequirementsHandler(IServiceScopeFactory serviceScopeFact
         {
             context.Succeed(requirement);
         }
-        return Task.CompletedTask;
     }
 }
