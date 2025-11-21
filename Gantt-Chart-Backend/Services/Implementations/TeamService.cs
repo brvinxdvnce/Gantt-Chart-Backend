@@ -1,44 +1,111 @@
 ﻿using Gantt_Chart_Backend.Auth;
+using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Data.Models;
+using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
 
 public class TeamService : ITeamService
 {
-    public Task<Guid> CreateTeam(TeamDto team)
+    private readonly GanttPlatformDbContext _dbcontext;
+
+    public TeamService(GanttPlatformDbContext dbcontext)
     {
-        throw new NotImplementedException();
+        _dbcontext = dbcontext;
+    }
+    
+    public async Task<Guid> CreateTeam(TeamDto team)
+    {
+        var newTask = new Team
+        {
+            Id = Guid.NewGuid()
+            //////////////
+        }; 
+        
+        _dbcontext.Teams.Add(newTask);
+        await _dbcontext.SaveChangesAsync();
+        return newTask.Id;
     }
 
-    public Task AddTeamMember(Guid teamId, Guid memberId)
+    public async Task AddTeamMember(Guid teamId, Guid memberId)
     {
-        throw new NotImplementedException();
+        var team = _dbcontext.Teams
+            .FirstOrDefault(t => t.Id == teamId)
+            ?? throw new NotFoundException();
+        
+        var user =  _dbcontext.ProjectMembers
+            .FirstOrDefault(u => u.Id == memberId)
+            ??  throw new NotFoundException();
+        
+        team.Performers.Add(user);
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task RemoveTeamMember(Guid teamId, Guid memberId)
+    public async Task RemoveTeamMember(Guid teamId, Guid memberId)
     {
-        throw new NotImplementedException();
+        var team = _dbcontext.Teams
+           .FirstOrDefault(t => t.Id == teamId) 
+           ?? throw new NotFoundException();
+
+        var user =  _dbcontext.ProjectMembers
+           .FirstOrDefault(u => u.Id == memberId) 
+           ??  throw new NotFoundException();
+        
+        team.Performers.Remove(user);
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task AddUserToProject(Guid userId, Guid projectId)
+    public async Task AddUserToProject(Guid userId, Guid projectId)
     {
-        throw new NotImplementedException();
+        var project = _dbcontext.Projects
+             .FirstOrDefault(t => t.Id == projectId) 
+             ?? throw new NotFoundException();
+        
+        var user =  _dbcontext.ProjectMembers
+              .FirstOrDefault(u => u.Id == userId)
+              ??  throw new NotFoundException();
+        
+        project.Members.Add(user);
+        
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task RemoveUserFromProject(Guid userId, Guid projectId)
+    public async Task RemoveUserFromProject(Guid userId, Guid projectId)
     {
-        throw new NotImplementedException();
+        var project = _dbcontext.Projects
+            .FirstOrDefault(t => t.Id == projectId) 
+            ?? throw new NotFoundException();
+        
+        var user =  _dbcontext.ProjectMembers
+            .FirstOrDefault(u => u.Id == userId)
+            ??  throw new NotFoundException();
+        
+        project.Members.Remove(user);
+        
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public Task SetUserRoleInProject(Guid userId, Guid projectId, Role roleId)
+    public async Task SetUserRoleInProject(Guid userId, Guid projectId, Role role)
     {
-        throw new NotImplementedException();
+        var user = _dbcontext.ProjectMembers
+            .FirstOrDefault(u => u.Id == userId)
+            ?? throw new NotFoundException();
+        
+        user.Role = role;
+
+        user.Permissions = role switch
+        {
+            Role.Admin => GetAdminPermissions(),
+            Role.Member => GetMemberPermissions()
+        };
+        
+        await _dbcontext.SaveChangesAsync();
     }
 
-    public ICollection<Permission> GetMemberPermissions()
+    private ICollection<Permission> GetMemberPermissions()
     {
         var permissions = new List<Permission>();
         
@@ -62,7 +129,7 @@ public class TeamService : ITeamService
         return permissions;
     } 
     
-    public ICollection<Permission> GetAdminPermissions()
+    private ICollection<Permission> GetAdminPermissions()
     {
         var permissions =  new List<Permission>();
         

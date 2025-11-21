@@ -9,5 +9,32 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         builder.ToTable("project");
+
+        builder.HasKey(p => p.Id);
+            
+        builder.Ignore(p => p.Members);
+        
+        builder.Property(p => p.CreatorId)
+            .IsRequired();
+
+        builder.Property(p => p.RootTaskId)
+            .IsRequired();
+
+         
+        builder.HasOne(p => p.Creator)
+            .WithMany() 
+            .HasForeignKey(p => p.CreatorId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        builder.HasOne(p => p.RootTask)
+            .WithOne()
+            .HasForeignKey<Project>(p => p.RootTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        builder.HasMany(p => p.Tasks)
+            .WithOne(t => t.Project)
+            .HasForeignKey(t => t.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
     }
 }

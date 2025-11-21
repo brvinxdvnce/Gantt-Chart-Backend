@@ -83,8 +83,19 @@ public class ProjectService : IProjectService
         return projectInfo;
     }
 
-    public Task SetProjectRootTask(Guid projectId, Guid taskId)
+    public async Task SetProjectRootTask(Guid projectId, Guid taskId)
     {
-        throw new NotImplementedException();
+        var task = _dbcontext.Tasks
+            .FirstOrDefault(t => t.Id == taskId)
+            ?? throw new NotFoundException();
+        
+        var project = _dbcontext.Projects
+            .FirstOrDefault(p => p.Id == projectId)
+            ?? throw new NotFoundException();
+        
+        project.RootTaskId =  taskId;
+        project.RootTask = task;
+
+        await _dbcontext.SaveChangesAsync();
     }
 }
