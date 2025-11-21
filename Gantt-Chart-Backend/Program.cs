@@ -10,7 +10,7 @@ builder.Services.Configure<JwtOptions>
     (builder.Configuration.GetSection(nameof(JwtOptions)));
 
 builder.Services.AddDbContext<GanttPlatformDbContext>(options => 
-    options.UseNpgsql("ConnectionString"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 
@@ -36,7 +36,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();

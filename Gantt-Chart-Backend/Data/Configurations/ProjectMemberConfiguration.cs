@@ -12,6 +12,8 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
 
         builder.HasKey(pm => pm.Id);
 
+        builder.HasMany(pm => pm.Permissions).WithMany();
+        
         builder.Property(pm => pm.UserId)
             .IsRequired();
 

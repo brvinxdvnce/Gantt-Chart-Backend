@@ -1,5 +1,4 @@
 ﻿using Gantt_Chart_Backend.Data.Configurations;
-using Gantt_Chart_Backend.Data.Interfaces;
 using Gantt_Chart_Backend.Data.Models;
 
 namespace Gantt_Chart_Backend.Data.DbContext;
@@ -19,14 +18,13 @@ public class GanttPlatformDbContext(DbContextOptions<GanttPlatformDbContext> opt
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Ignore<Performer>();
-        
         modelBuilder.ApplyConfiguration(new UserConfiguration          ());
         modelBuilder.ApplyConfiguration(new ProjectConfiguration       ());
         modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration ());
         modelBuilder.ApplyConfiguration(new TeamConfiguration          ());
         modelBuilder.ApplyConfiguration(new TaskConfiguration          ());
         modelBuilder.ApplyConfiguration(new DependenceConfiguration    ());
+        modelBuilder.ApplyConfiguration(new PermissionConfiguration    ());
         
     }
 }

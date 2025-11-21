@@ -37,6 +37,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Route("register")]
     public async Task<IActionResult> RegisterUser(
         [FromBody] UserRequestDto userRequestDto)
     {
@@ -50,13 +51,18 @@ public class UsersController : ControllerBase
         } 
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Login([FromBody]LoginUserRequest user, HttpContext httpContext)
+    [HttpPost]
+    [Route("login")]
+    public async Task<IActionResult> Login(
+        [FromBody]LoginUserRequest user
+        //HttpContext httpContext
+        )
     {
         try
         {
             var token = await _usersService.Login(user);
-            httpContext.Response.Cookies.Append("jwt-token", token);
+            //httpContext.
+            Response.Cookies.Append("jwt-token", token);
             return Ok(token);
         }
         catch (NotFoundException ex)
