@@ -44,7 +44,7 @@ public class ProjectsController : ControllerBase
     
     [HttpGet]
     public async Task<IActionResult> GetUserProjects(
-        [FromBody] Guid userId)
+        [FromQuery] Guid userId)
     {
         return Ok(await _projectService.GetUserProjects(userId));
     }
