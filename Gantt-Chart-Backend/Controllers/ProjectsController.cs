@@ -43,6 +43,13 @@ public class ProjectsController : ControllerBase
     }
     
     [HttpGet]
+    public async Task<IActionResult> GetUserProjects(
+        [FromBody] Guid userId)
+    {
+        return Ok(await _projectService.GetUserProjects(userId));
+    }
+    
+    [HttpGet]
     [Route("{projectId:guid}")]
     public async Task<IActionResult> GetProjectInfo(
         [FromRoute] Guid projectId)

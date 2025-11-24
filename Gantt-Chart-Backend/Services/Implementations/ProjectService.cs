@@ -33,6 +33,29 @@ public class ProjectService : IProjectService
         return Task.FromResult(newProject.Id);
     }
 
+    public async Task<ICollection<ProjectCardDto>> GetUserProjects(Guid userId)
+    {
+        var projects = await _dbcontext.Projects
+                           .Where(p =>
+                               p.Members
+                                   .Any(u => u.Id == userId))
+                           .ToListAsync()
+                       ?? throw new NotFoundException();
+
+        var projectCards = projects
+            .Select(p => new ProjectCardDto(
+                Id: p.Id,
+                Name: p.Name,
+                UsersCount: p.Members.Count,
+                CreatorNickName: p.Creator.NickName ?? string.Empty,
+                CurrentUserRole: _dbcontext.ProjectMembers
+                    .FirstOrDefault(u => u.Id == userId).Role
+            ))
+            .ToList();
+
+        return projectCards;
+    }
+
     public async Task UpdateProject(Guid projectId, ProjectDto projectDto)
     {
         var p = await _dbcontext.Projects
