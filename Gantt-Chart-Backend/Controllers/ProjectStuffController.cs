@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Gantt_Chart_Backend.Controllers;
 
 
-[Authorize]
+//[Authorize]
 [Route("api/teams")]
 [ApiController]
 public class ProjectStuffController : ControllerBase

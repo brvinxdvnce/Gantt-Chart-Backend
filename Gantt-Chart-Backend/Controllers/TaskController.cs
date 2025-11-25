@@ -32,7 +32,7 @@ public class TaskController : ControllerBase
     }
     
     [HttpGet]
-    [Authorize(Permissions.ReadTask)]
+    //[Authorize(Permissions.ReadTask)]
     [Route("{taskId}")]
     public async Task<IActionResult> GetTaskInfo(
         [FromRoute] Guid taskId)
