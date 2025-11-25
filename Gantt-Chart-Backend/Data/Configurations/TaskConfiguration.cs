@@ -12,8 +12,6 @@ public class TaskConfiguration : IEntityTypeConfiguration<ProjectTask>
 
         builder.HasKey(t => t.Id);
 
-        builder.Ignore(t => t.Performers); 
-        
         builder.Property(t => t.Name)
             .IsRequired();
 

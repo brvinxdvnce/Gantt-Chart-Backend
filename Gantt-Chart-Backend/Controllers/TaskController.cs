@@ -97,22 +97,42 @@ public class TaskController : ControllerBase
     }
     
     [HttpPost]
-    [Route("{taskId}/performers")]
-    public async Task<IActionResult> AddTaskPerformers(
+    [Route("{taskId}/performers/users")]
+    public async Task<IActionResult> AddTaskPerformerUser(
         [FromRoute] Guid taskId,
-        [FromQuery] Guid userId)
+        [FromQuery] Guid id)
     {
-        await _taskService.AddTaskPerformer(taskId, userId);
+        await _taskService.AddTaskPerformer(taskId, id, 0);
         return Ok();
     }
 
     [HttpDelete]
-    [Route("{taskId}/performers")]
-    public async Task<IActionResult> RemoveTaskPerformers(
+    [Route("{taskId}/performers/users")]
+    public async Task<IActionResult> RemoveTaskPerformersUser(
         [FromRoute] Guid taskId,
-        [FromQuery] Guid userId)
+        [FromQuery] Guid id)
     { 
-        await _taskService.RemoveTaskPerformer(taskId, userId);
+        await _taskService.RemoveTaskPerformer(taskId, id, 0);
+        return Ok();
+    }
+    
+    [HttpPost]
+    [Route("{taskId}/performers/teams")]
+    public async Task<IActionResult> AddTaskPerformersTeam(
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid id)
+    {
+        await _taskService.AddTaskPerformer(taskId, id, 1);
+        return Ok();
+    }
+
+    [HttpDelete]
+    [Route("{taskId}/performers/teams")]
+    public async Task<IActionResult> RemoveTaskPerformersTeam(
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid id)
+    { 
+        await _taskService.RemoveTaskPerformer(taskId, id, 1);
         return Ok();
     }
 }

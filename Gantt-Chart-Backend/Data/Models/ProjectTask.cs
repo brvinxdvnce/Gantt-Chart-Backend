@@ -13,8 +13,10 @@ public class ProjectTask
     public DateTime EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
 
     public List<ProjectMember> Performers { get; set; } = new();
+    public List<Team> Teams { get; set; } = new();
     public List<Dependence> Dependencies { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
     
     public Project Project { get; set; }
 }
+

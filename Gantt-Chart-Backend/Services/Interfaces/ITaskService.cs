@@ -12,6 +12,6 @@ public interface ITaskService
     public Task DeleteTask(Guid taskId);
     public Task AddTaskDependence(DependenceDto depDto);
     public Task RemoveTaskDependence(DependenceDto depDto);
-    public Task AddTaskPerformer(Guid taskId, Guid userId);
-    public Task RemoveTaskPerformer(Guid taskId, Guid userId);
+    public Task AddTaskPerformer(Guid taskId, Guid userId, int n);
+    public Task RemoveTaskPerformer(Guid taskId, Guid userId, int n);
 }

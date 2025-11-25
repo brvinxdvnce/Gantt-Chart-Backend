@@ -12,8 +12,6 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.ToTable("team");
 
         builder.HasKey(t => t.Id);
-
-        builder.Ignore(t => t.Performers);
         
         builder.Property(t => t.LeaderId)
             .IsRequired();

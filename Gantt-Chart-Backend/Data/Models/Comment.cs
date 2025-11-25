@@ -8,6 +8,6 @@ public class Comment
     public string Content { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    public Project Project { get; set; }
+    public ProjectTask Task { get; set; }
     public User Author { get; set; }
 }

@@ -94,29 +94,41 @@ public class TaskService : ITaskService
         await _dbcontext.SaveChangesAsync();
     }
 
-    public Task AddTaskPerformer(Guid taskId, Guid userId)
+    public Task AddTaskPerformer(Guid taskId, Guid userId, int n)
     {
         var task = _dbcontext.Tasks
             .FirstOrDefault(t => t.Id == taskId) ?? throw new NotFoundException();
         
-        var user = _dbcontext.ProjectMembers
-            .FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
-        
-        task.Performers.Add(user);
+        if (n == 0)
+        {
+            var performer = _dbcontext.ProjectMembers.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+            task.Performers.Add(performer);
+        }
+        else
+        {
+            var team = _dbcontext.Teams.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+            task.Teams.Add(team);
+        }
         _dbcontext.SaveChanges();
         
         return Task.CompletedTask;
     }
 
-    public async Task RemoveTaskPerformer(Guid taskId, Guid userId)
+    public async Task RemoveTaskPerformer(Guid taskId, Guid userId, int n)
     {
         var task = _dbcontext.Tasks
             .FirstOrDefault(t => t.Id == taskId) ?? throw new NotFoundException();
         
-        var user = _dbcontext.ProjectMembers
-            .FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
-        
-        task.Performers.Remove(user);
+        if (n == 0)
+        {
+            var performer = _dbcontext.ProjectMembers.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+            task.Performers.Remove(performer);
+        }
+        else
+        {
+            var team = _dbcontext.Teams.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+            task.Teams.Remove(team);
+        }
         await _dbcontext.SaveChangesAsync();
     }
 }
