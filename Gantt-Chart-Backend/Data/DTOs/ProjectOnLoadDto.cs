@@ -11,5 +11,6 @@ public record ProjectOnLoadDto
     DateTime? DeadLine,
     ProjectTask RootTask,
     List<ProjectTask> Tasks,
-    List<Performer> Members
+    List<ProjectMember> Members,
+    List<Team> Teams
 );

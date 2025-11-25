@@ -27,7 +27,7 @@ public class ProjectService : IProjectService
             CreatorId = project.CreatorId,
             DeadLine = project.DeadLine ??  DateTime.Now.AddDays(10),
             RootTask = project.RootTask ??  new ProjectTask(),
-            Members = project.Members ?? new List<Performer>()
+            Members = project.Members ?? new List<ProjectMember>()
         };
 
         return Task.FromResult(newProject.Id);
@@ -101,7 +101,8 @@ public class ProjectService : IProjectService
                 project.DeadLine,
                 project.RootTask,
                 project.Tasks,
-                project.Members
+                project.Members,
+                project.Teams
         );
         return projectInfo;
     }

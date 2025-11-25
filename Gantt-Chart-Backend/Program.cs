@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization.Metadata;
 using Gantt_Chart_Backend.Data.DbContext;
+using Gantt_Chart_Backend.Data.Interfaces;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Services.Implementations;
 using Gantt_Chart_Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +29,29 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPasswordHasher,  PasswordHasher>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
+/*builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+    {
+        Modifiers = { AddPolymorphicTypeInfo }
+    };
+});
+
+static void AddPolymorphicTypeInfo(JsonTypeInfo typeInfo)
+{
+    if (typeInfo.Type == typeof(Performer))
+    {
+        typeInfo.PolymorphismOptions = new JsonPolymorphismOptions
+        {
+            TypeDiscriminatorPropertyName = "$type",
+            DerivedTypes =
+            {
+                new JsonDerivedType(typeof(Team), "ConcretePerformer"),
+                new JsonDerivedType(typeof(ProjectMember), "ConcretePerformer"),
+            }
+        };
+    }
+}*/
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy =>

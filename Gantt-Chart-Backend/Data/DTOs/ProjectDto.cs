@@ -10,5 +10,6 @@ public record ProjectDto(
     DateTime? DeadLine, 
     ProjectTask? RootTask, 
     List<ProjectTask>? Tasks, 
-    List<Performer>? Members 
+    List<ProjectMember>? Members, 
+    List<Team>? Teams 
 );

@@ -11,16 +11,14 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.ToTable("project");
 
         builder.HasKey(p => p.Id);
-            
-        builder.Ignore(p => p.Members);
-        
+       
         builder.Property(p => p.CreatorId)
             .IsRequired();
 
         builder.Property(p => p.RootTaskId)
             .IsRequired();
 
-         
+        
         builder.HasOne(p => p.Creator)
             .WithMany() 
             .HasForeignKey(p => p.CreatorId)

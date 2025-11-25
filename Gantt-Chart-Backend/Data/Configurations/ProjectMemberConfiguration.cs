@@ -14,7 +14,7 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
 
         builder.HasMany(pm => pm.Permissions).WithMany();
         
-        builder.Property(pm => pm.UserId)
+        builder.Property(pm => pm.Id)
             .IsRequired();
 
         builder.Property(pm => pm.ProjectId)
@@ -25,7 +25,7 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
             
         builder.HasOne(pm => pm.User)
             .WithMany(u => u.Roles)
-            .HasForeignKey(pm => pm.UserId)
+            .HasForeignKey(pm => pm.Id)
             .OnDelete(DeleteBehavior.Cascade);
             
         builder.HasOne(pm => pm.Project)
