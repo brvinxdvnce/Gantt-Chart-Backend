@@ -1,7 +1,6 @@
 ﻿using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Enums;
-using Gantt_Chart_Backend.Data.Interfaces;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;

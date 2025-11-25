@@ -1,5 +1,4 @@
-﻿using Gantt_Chart_Backend.Data.Interfaces;
-using Gantt_Chart_Backend.Data.Models;
+﻿using Gantt_Chart_Backend.Data.Models;
 
 namespace Gantt_Chart_Backend.Data.DTOs;
 

@@ -1,5 +1,4 @@
-﻿using Gantt_Chart_Backend.Data.Interfaces;
-using Gantt_Chart_Backend.Data.Models;
+﻿using Gantt_Chart_Backend.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,5 +19,9 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             .WithMany() 
             .HasForeignKey(t => t.LeaderId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(p => p.Performers)
+            .WithMany();
+
     }
 }

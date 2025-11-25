@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization.Metadata;
 using Gantt_Chart_Backend.Data.DbContext;
-using Gantt_Chart_Backend.Data.Interfaces;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Services.Implementations;
 using Gantt_Chart_Backend.Services.Interfaces;

@@ -1,5 +1,4 @@
 ﻿using Gantt_Chart_Backend.Data.Enums;
-using Gantt_Chart_Backend.Data.Interfaces;
 
 namespace Gantt_Chart_Backend.Data.Models;
 
