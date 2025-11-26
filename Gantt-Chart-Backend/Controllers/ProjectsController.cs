@@ -27,7 +27,8 @@ public class ProjectsController : ControllerBase
 
     private Guid GetCurrentUserId()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirstValue("userId");
         if (string.IsNullOrEmpty(userId) 
             || !Guid.TryParse(userId, out var guid))
             throw new UnauthorizedAccessException();
@@ -37,7 +38,7 @@ public class ProjectsController : ControllerBase
     
     [HttpPost]
     public async Task<IActionResult> CreateProject(
-        [FromBody] ProjectDto project)
+        [FromBody] ProjectCreateDto project)
     {
         return Ok(await _projectService.CreateProject(project));
     }
@@ -54,10 +55,10 @@ public class ProjectsController : ControllerBase
     public async Task<IActionResult> GetProjectInfo(
         [FromRoute] Guid projectId)
     {
-        var userId = GetCurrentUserId();
+        //var userId = GetCurrentUserId();
         try
         {
-            return Ok(await _projectService.GetFullProjectInfo(projectId, userId));
+            return Ok(await _projectService.GetFullProjectInfo(projectId, Guid.Empty));
         }
         catch (NotFoundException ex)
         {

@@ -5,6 +5,7 @@ using Gantt_Chart_Backend.Data.Enums;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Exceptions;
 using Gantt_Chart_Backend.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
 
@@ -62,13 +63,24 @@ public class TeamService : ITeamService
     {
         var project = _dbcontext.Projects
              .FirstOrDefault(t => t.Id == projectId) 
-             ?? throw new NotFoundException();
+             ?? throw new NotFoundException("ProjectNotFound");
         
-        var user =  _dbcontext.ProjectMembers
+        var user =  _dbcontext.Users
               .FirstOrDefault(u => u.Id == userId)
-              ??  throw new NotFoundException();
+              ??  throw new NotFoundException("UserNotFound");
+
+        var pm = new ProjectMember
+        {
+            Id = user.Id,
+            ProjectId = projectId,
+            Role = Role.Member,
+            User = user,
+            Project = project
+        };
         
-        project.Members.Add(user);
+        project.Members.Add(pm);
+
+        user.Roles.Add(pm);
         
         await _dbcontext.SaveChangesAsync();
     }

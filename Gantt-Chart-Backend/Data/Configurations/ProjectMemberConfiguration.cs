@@ -10,7 +10,7 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
     {
         builder.ToTable("project_member");
 
-        builder.HasKey(pm => pm.Id);
+        builder.HasKey(pm => new { pm.Id, pm.ProjectId });
 
         builder.HasMany(pm => pm.Permissions).WithMany();
         
@@ -21,16 +21,12 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
             .IsRequired();
 
         builder.Property(pm => pm.Role)
+            //.HasConversion<string>()
             .IsRequired();
             
         builder.HasOne(pm => pm.User)
             .WithMany(u => u.Roles)
             .HasForeignKey(pm => pm.Id)
-            .OnDelete(DeleteBehavior.Cascade);
-            
-        builder.HasOne(pm => pm.Project)
-            .WithMany()
-            .HasForeignKey(pm => pm.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

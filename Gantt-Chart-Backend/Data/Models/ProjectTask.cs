@@ -11,10 +11,10 @@ public class ProjectTask
     public DateTime StartTime { get; set; } = DateTime.UtcNow;
     public DateTime EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
 
-    public List<ProjectMember> Performers { get; set; } = new();
+    public List<ProjectMember> Performers { get; set; } = new List<ProjectMember>();
     public List<Team> Teams { get; set; } = new();
-    public List<Dependence> Dependencies { get; set; } = new();
-    public List<Comment> Comments { get; set; } = new();
+    public List<Dependence> Dependencies { get; set; } = new List<Dependence>();
+    public List<Comment> Comments { get; set; } = new List<Comment>();
     
     public Project Project { get; set; }
 }

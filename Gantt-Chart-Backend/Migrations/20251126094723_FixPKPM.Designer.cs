@@ -3,6 +3,7 @@ using System;
 using Gantt_Chart_Backend.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gantt_Chart_Backend.Migrations
 {
     [DbContext(typeof(GanttPlatformDbContext))]
-    partial class GanttPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251126094723_FixPKPM")]
+    partial class FixPKPM
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,9 +132,8 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid?>("ProjectTaskId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id", "ProjectId");
 

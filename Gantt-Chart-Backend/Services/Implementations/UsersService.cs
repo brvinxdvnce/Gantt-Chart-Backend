@@ -35,7 +35,7 @@ public class UsersService : IUsersService
         var newUser = new User()
         {
             Id = Guid.NewGuid(),
-            NickName = userRequestDto.NickName,
+            NickName = userRequestDto.NickName ?? "",
             Email = userRequestDto.Email,
             PasswordHash = _passwordHasher.GeneratePasswordHash(userRequestDto.Password)
         };
@@ -50,6 +50,7 @@ public class UsersService : IUsersService
     public async Task<string> Login (LoginUserRequest userDto)
     {
         var user = await _dbcontext.Users
+            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == userDto.Email)
             ?? throw new NotFoundException();
         
@@ -79,6 +80,7 @@ public class UsersService : IUsersService
     public async Task<ICollection<Permission>> GetUserPermissionsByName(string name)
     {
         return await _dbcontext.ProjectMembers
+            .AsNoTracking()
             //.Include(p => p.User)
             //.Include(p => p.Permissions)
             .Where(u => u.User.NickName.Contains(name))

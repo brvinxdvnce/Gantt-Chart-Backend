@@ -3,6 +3,7 @@ using System;
 using Gantt_Chart_Backend.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gantt_Chart_Backend.Migrations
 {
     [DbContext(typeof(GanttPlatformDbContext))]
-    partial class GanttPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251125183400_FixMigrations2")]
+    partial class FixMigrations2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,11 +132,10 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid?>("ProjectTaskId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
-                    b.HasKey("Id", "ProjectId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
@@ -192,11 +194,11 @@ namespace Gantt_Chart_Backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LeaderId");
+
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("ProjectTaskId");
-
-                    b.HasIndex("LeaderId", "ProjectId");
 
                     b.ToTable("team", (string)null);
                 });
@@ -235,30 +237,24 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("ProjectMemberId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ProjectMemberProjectId")
-                        .HasColumnType("uuid");
+                    b.HasKey("PermissionsId", "ProjectMemberId");
 
-                    b.HasKey("PermissionsId", "ProjectMemberId", "ProjectMemberProjectId");
-
-                    b.HasIndex("ProjectMemberId", "ProjectMemberProjectId");
+                    b.HasIndex("ProjectMemberId");
 
                     b.ToTable("PermissionProjectMember");
                 });
 
             modelBuilder.Entity("ProjectMemberTeam", b =>
                 {
-                    b.Property<Guid>("TeamId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("PerformersId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("PerformersProjectId")
+                    b.Property<Guid>("TeamId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("TeamId", "PerformersId", "PerformersProjectId");
+                    b.HasKey("PerformersId", "TeamId");
 
-                    b.HasIndex("PerformersId", "PerformersProjectId");
+                    b.HasIndex("TeamId");
 
                     b.ToTable("ProjectMemberTeam");
                 });
@@ -355,6 +351,12 @@ namespace Gantt_Chart_Backend.Migrations
 
             modelBuilder.Entity("Gantt_Chart_Backend.Data.Models.Team", b =>
                 {
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", "Leader")
+                        .WithMany()
+                        .HasForeignKey("LeaderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Gantt_Chart_Backend.Data.Models.Project", "Project")
                         .WithMany("Teams")
                         .HasForeignKey("ProjectId")
@@ -364,12 +366,6 @@ namespace Gantt_Chart_Backend.Migrations
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", null)
                         .WithMany("Teams")
                         .HasForeignKey("ProjectTaskId");
-
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", "Leader")
-                        .WithMany()
-                        .HasForeignKey("LeaderId", "ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.Navigation("Leader");
 
@@ -386,22 +382,22 @@ namespace Gantt_Chart_Backend.Migrations
 
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
                         .WithMany()
-                        .HasForeignKey("ProjectMemberId", "ProjectMemberProjectId")
+                        .HasForeignKey("ProjectMemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectMemberTeam", b =>
                 {
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.Team", null)
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
                         .WithMany()
-                        .HasForeignKey("TeamId")
+                        .HasForeignKey("PerformersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.Team", null)
                         .WithMany()
-                        .HasForeignKey("PerformersId", "PerformersProjectId")
+                        .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -28,35 +28,11 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPasswordHasher,  PasswordHasher>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
-/*builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
-    {
-        Modifiers = { AddPolymorphicTypeInfo }
-    };
-});
-
-static void AddPolymorphicTypeInfo(JsonTypeInfo typeInfo)
-{
-    if (typeInfo.Type == typeof(Performer))
-    {
-        typeInfo.PolymorphismOptions = new JsonPolymorphismOptions
-        {
-            TypeDiscriminatorPropertyName = "$type",
-            DerivedTypes =
-            {
-                new JsonDerivedType(typeof(Team), "ConcretePerformer"),
-                new JsonDerivedType(typeof(ProjectMember), "ConcretePerformer"),
-            }
-        };
-    }
-}*/
-
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5174")
+            .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

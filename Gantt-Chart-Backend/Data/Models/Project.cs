@@ -6,9 +6,9 @@ public class Project
     public string Name { get; set; }
     public Guid CreatorId { get; set; }
     
-    public Guid RootTaskId { get; set; }
+    public Guid? RootTaskId { get; set; }
     public DateTime? DeadLine { get; set; }
-    public ProjectTask RootTask { get; set; }
+    public ProjectTask? RootTask { get; set; }
     public List<ProjectTask> Tasks { get; set; }
     public List<ProjectMember> Members { get; set; }
     public List<Team> Teams { get; set; }

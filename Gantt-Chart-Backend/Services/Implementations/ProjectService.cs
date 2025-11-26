@@ -11,48 +11,84 @@ namespace Gantt_Chart_Backend.Services.Implementations;
 public class ProjectService : IProjectService
 {
     private readonly GanttPlatformDbContext _dbcontext;
-
-    public ProjectService(GanttPlatformDbContext dbcontext)
+    private readonly ITeamService _teamService;
+    
+    public ProjectService(
+        GanttPlatformDbContext dbcontext,
+        ITeamService teamService)
     {
+        _teamService =  teamService;
         _dbcontext = dbcontext;
     }
 
-    public Task<Guid> CreateProject(ProjectDto project)
+    public async Task<Guid> CreateProject(ProjectCreateDto project)
     {
         var newProject = new Project
         {
             Id =  Guid.NewGuid(),
             Name = project.Name,
             CreatorId = project.CreatorId,
+            RootTaskId = null,
+            RootTask = null,
             DeadLine = project.DeadLine ??  DateTime.Now.AddDays(10),
-            RootTask = project.RootTask ??  new ProjectTask(),
-            Members = project.Members ?? new List<ProjectMember>()
+            Members = new List<ProjectMember>(),
+            Teams = new List<Team>(),
         };
-
-        return Task.FromResult(newProject.Id);
+        
+        _dbcontext.Projects.Add(newProject);
+        
+        await _dbcontext.SaveChangesAsync();
+        
+        /*
+        var rootTask = new ProjectTask
+        {
+            Id = Guid.NewGuid(),
+            Name = $"{project.Name}",
+            ProjectId = newProject.Id,
+        };*/
+        
+        await _teamService.AddUserToProject(project.CreatorId, newProject.Id);
+        await _teamService.SetUserRoleInProject(project.CreatorId, newProject.Id, Role.Admin);
+        
+        return newProject.Id;
     }
 
     public async Task<ICollection<ProjectCardDto>> GetUserProjects(Guid userId)
     {
         var projects = await _dbcontext.Projects
-                           .Where(p =>
-                               p.Members
-                                   .Any(u => u.Id == userId))
-                           .ToListAsync()
-                       ?? throw new NotFoundException();
+            .AsNoTracking()
+            .Include(p => p.Members)
+            .Include(p => p.Creator)
+            .Where(p =>
+               p.Members
+                   .Any(u => u.Id == userId))
+            .Select(p => new ProjectCardDto(
+                   p.Id,
+                   p.Name ?? string.Empty,
+                   p.Members != null? p.Members.Count : 0,
+                   p.Creator.NickName ?? string.Empty,
+                   _dbcontext.ProjectMembers 
+                       .AsNoTracking()
+                       .FirstOrDefault(u => u.Id == userId).Role
+               ))
+               .ToListAsync();
 
-        var projectCards = projects
+        if (!projects.Any())
+            throw new NotFoundException();
+        
+        /*var projectCards = projects
             .Select(p => new ProjectCardDto(
                 Id: p.Id,
                 Name: p.Name,
                 UsersCount: p.Members.Count,
                 CreatorNickName: p.Creator.NickName ?? string.Empty,
-                CurrentUserRole: _dbcontext.ProjectMembers
+                CurrentUserRole: _dbcontext.ProjectMembers 
                     .FirstOrDefault(u => u.Id == userId).Role
             ))
             .ToList();
+            */
 
-        return projectCards;
+        return projects;
     }
 
     public async Task UpdateProject(Guid projectId, ProjectDto projectDto)
@@ -73,7 +109,7 @@ public class ProjectService : IProjectService
 
     public async Task DeleteProject(Guid projectId, Guid userId)
     {
-        var project = _dbcontext.Projects
+        var project = await _dbcontext.Projects
             .FirstOrDefaultAsync(p => p.Id == projectId)
             ??  throw new NotFoundException();
 
@@ -85,12 +121,15 @@ public class ProjectService : IProjectService
         (Guid projectId, Guid userId)
     {
         var project =  await _dbcontext.Projects
+            .AsNoTracking()
             .FirstOrDefaultAsync(p=> p.Id == projectId)
             ?? throw new NotFoundException();
         
+        /*
         var user = project.Members
             .FirstOrDefault(m => m.Id == userId)
             ?? throw new ForbidException();
+            */
         
         var projectInfo = new ProjectOnLoadDto
         (

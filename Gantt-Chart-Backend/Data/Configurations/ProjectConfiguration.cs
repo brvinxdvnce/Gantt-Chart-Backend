@@ -15,8 +15,10 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(p => p.CreatorId)
             .IsRequired();
 
+        
         builder.Property(p => p.RootTaskId)
-            .IsRequired();
+            .IsRequired(false);
+            
 
         
         builder.HasOne(p => p.Creator)
@@ -27,6 +29,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasOne(p => p.RootTask)
             .WithOne()
             .HasForeignKey<Project>(p => p.RootTaskId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
             
         builder.HasMany(p => p.Tasks)

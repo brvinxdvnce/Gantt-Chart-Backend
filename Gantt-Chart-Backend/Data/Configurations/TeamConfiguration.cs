@@ -17,7 +17,8 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             
         builder.HasOne(t => t.Leader)
             .WithMany() 
-            .HasForeignKey(t => t.LeaderId)
+            .HasForeignKey(t => new { t.LeaderId, t.ProjectId })
+            .HasPrincipalKey(pm => new { pm.Id, pm.ProjectId }) 
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(p => p.Performers)
