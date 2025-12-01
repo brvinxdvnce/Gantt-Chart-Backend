@@ -1,10 +1,11 @@
 using System.Text.Json.Serialization.Metadata;
 using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.Models;
+using Gantt_Chart_Backend.Extensions;
 using Gantt_Chart_Backend.Services.Implementations;
 using Gantt_Chart_Backend.Services.Interfaces;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,9 @@ builder.Services.AddCors(options => {
     });
 });
 
+builder.Services.AddApiAuthentication(
+    builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -52,8 +56,8 @@ app.UseRouting();
 app.UseCors("AllowAll");
 
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

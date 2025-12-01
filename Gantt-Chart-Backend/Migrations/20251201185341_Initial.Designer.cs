@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gantt_Chart_Backend.Migrations
 {
     [DbContext(typeof(GanttPlatformDbContext))]
-    [Migration("20251125181800_FixMigrations")]
-    partial class FixMigrations
+    [Migration("20251201185341_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,7 +108,7 @@ namespace Gantt_Chart_Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("RootTaskId")
+                    b.Property<Guid?>("RootTaskId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -132,10 +132,11 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid?>("ProjectTaskId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "ProjectId");
 
                     b.HasIndex("ProjectId");
 
@@ -194,11 +195,11 @@ namespace Gantt_Chart_Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LeaderId");
-
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("ProjectTaskId");
+
+                    b.HasIndex("LeaderId", "ProjectId");
 
                     b.ToTable("team", (string)null);
                 });
@@ -237,24 +238,30 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("ProjectMemberId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("PermissionsId", "ProjectMemberId");
+                    b.Property<Guid>("ProjectMemberProjectId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("ProjectMemberId");
+                    b.HasKey("PermissionsId", "ProjectMemberId", "ProjectMemberProjectId");
+
+                    b.HasIndex("ProjectMemberId", "ProjectMemberProjectId");
 
                     b.ToTable("PermissionProjectMember");
                 });
 
             modelBuilder.Entity("ProjectMemberTeam", b =>
                 {
-                    b.Property<Guid>("PerformersId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TeamId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("PerformersId", "TeamId");
+                    b.Property<Guid>("PerformersId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("TeamId");
+                    b.Property<Guid>("PerformersProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TeamId", "PerformersId", "PerformersProjectId");
+
+                    b.HasIndex("PerformersId", "PerformersProjectId");
 
                     b.ToTable("ProjectMemberTeam");
                 });
@@ -308,8 +315,7 @@ namespace Gantt_Chart_Backend.Migrations
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", "RootTask")
                         .WithOne()
                         .HasForeignKey("Gantt_Chart_Backend.Data.Models.Project", "RootTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Creator");
 
@@ -352,12 +358,6 @@ namespace Gantt_Chart_Backend.Migrations
 
             modelBuilder.Entity("Gantt_Chart_Backend.Data.Models.Team", b =>
                 {
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", "Leader")
-                        .WithMany()
-                        .HasForeignKey("LeaderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Gantt_Chart_Backend.Data.Models.Project", "Project")
                         .WithMany("Teams")
                         .HasForeignKey("ProjectId")
@@ -367,6 +367,12 @@ namespace Gantt_Chart_Backend.Migrations
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", null)
                         .WithMany("Teams")
                         .HasForeignKey("ProjectTaskId");
+
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", "Leader")
+                        .WithMany()
+                        .HasForeignKey("LeaderId", "ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Leader");
 
@@ -383,22 +389,22 @@ namespace Gantt_Chart_Backend.Migrations
 
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
                         .WithMany()
-                        .HasForeignKey("ProjectMemberId")
+                        .HasForeignKey("ProjectMemberId", "ProjectMemberProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectMemberTeam", b =>
                 {
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
-                        .WithMany()
-                        .HasForeignKey("PerformersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Gantt_Chart_Backend.Data.Models.Team", null)
                         .WithMany()
                         .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
+                        .WithMany()
+                        .HasForeignKey("PerformersId", "PerformersProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

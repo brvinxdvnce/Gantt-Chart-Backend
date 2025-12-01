@@ -47,7 +47,15 @@ public class ProjectsController : ControllerBase
     public async Task<IActionResult> GetUserProjects(
         [FromQuery] Guid userId)
     {
-        return Ok(await _projectService.GetUserProjects(userId));
+        Console.WriteLine(GetCurrentUserId());
+        try
+        {
+            return Ok(await _projectService.GetUserProjects(userId));
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
     
     [HttpGet]

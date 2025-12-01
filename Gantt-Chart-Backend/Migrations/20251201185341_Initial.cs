@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Gantt_Chart_Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDb : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,11 +63,12 @@ namespace Gantt_Chart_Backend.Migrations
                 columns: table => new
                 {
                     PermissionsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProjectMemberId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ProjectMemberId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectMemberProjectId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PermissionProjectMember", x => new { x.PermissionsId, x.ProjectMemberId });
+                    table.PrimaryKey("PK_PermissionProjectMember", x => new { x.PermissionsId, x.ProjectMemberId, x.ProjectMemberProjectId });
                     table.ForeignKey(
                         name: "FK_PermissionProjectMember_permission_PermissionsId",
                         column: x => x.PermissionsId,
@@ -80,12 +81,13 @@ namespace Gantt_Chart_Backend.Migrations
                 name: "ProjectMemberTeam",
                 columns: table => new
                 {
+                    TeamId = table.Column<Guid>(type: "uuid", nullable: false),
                     PerformersId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TeamId = table.Column<Guid>(type: "uuid", nullable: false)
+                    PerformersProjectId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectMemberTeam", x => new { x.PerformersId, x.TeamId });
+                    table.PrimaryKey("PK_ProjectMemberTeam", x => new { x.TeamId, x.PerformersId, x.PerformersProjectId });
                 });
 
             migrationBuilder.CreateTable(
@@ -109,7 +111,7 @@ namespace Gantt_Chart_Backend.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RootTaskId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RootTaskId = table.Column<Guid>(type: "uuid", nullable: true),
                     DeadLine = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
@@ -152,24 +154,18 @@ namespace Gantt_Chart_Backend.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    ProjectId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    Role = table.Column<string>(type: "text", nullable: false),
                     ProjectTaskId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_project_member", x => x.Id);
+                    table.PrimaryKey("PK_project_member", x => new { x.Id, x.ProjectId });
                     table.ForeignKey(
                         name: "FK_project_member_project_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "project",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_project_member_project_ProjectId1",
-                        column: x => x.ProjectId1,
-                        principalTable: "project",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_project_member_task_ProjectTaskId",
                         column: x => x.ProjectTaskId,
@@ -202,10 +198,10 @@ namespace Gantt_Chart_Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_team_project_member_LeaderId",
-                        column: x => x.LeaderId,
+                        name: "FK_team_project_member_LeaderId_ProjectId",
+                        columns: x => new { x.LeaderId, x.ProjectId },
                         principalTable: "project_member",
-                        principalColumn: "Id",
+                        principalColumns: new[] { "Id", "ProjectId" },
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_team_task_ProjectTaskId",
@@ -225,14 +221,14 @@ namespace Gantt_Chart_Backend.Migrations
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PermissionProjectMember_ProjectMemberId",
+                name: "IX_PermissionProjectMember_ProjectMemberId_ProjectMemberProjec~",
                 table: "PermissionProjectMember",
-                column: "ProjectMemberId");
+                columns: new[] { "ProjectMemberId", "ProjectMemberProjectId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectMemberTeam_TeamId",
+                name: "IX_ProjectMemberTeam_PerformersId_PerformersProjectId",
                 table: "ProjectMemberTeam",
-                column: "TeamId");
+                columns: new[] { "PerformersId", "PerformersProjectId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_dependence_ChildId",
@@ -261,11 +257,6 @@ namespace Gantt_Chart_Backend.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_project_member_ProjectId1",
-                table: "project_member",
-                column: "ProjectId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_project_member_ProjectTaskId",
                 table: "project_member",
                 column: "ProjectTaskId");
@@ -276,9 +267,9 @@ namespace Gantt_Chart_Backend.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_team_LeaderId",
+                name: "IX_team_LeaderId_ProjectId",
                 table: "team",
-                column: "LeaderId");
+                columns: new[] { "LeaderId", "ProjectId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_team_ProjectId",
@@ -305,19 +296,19 @@ namespace Gantt_Chart_Backend.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_PermissionProjectMember_project_member_ProjectMemberId",
+                name: "FK_PermissionProjectMember_project_member_ProjectMemberId_Proj~",
                 table: "PermissionProjectMember",
-                column: "ProjectMemberId",
+                columns: new[] { "ProjectMemberId", "ProjectMemberProjectId" },
                 principalTable: "project_member",
-                principalColumn: "Id",
+                principalColumns: new[] { "Id", "ProjectId" },
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ProjectMemberTeam_project_member_PerformersId",
+                name: "FK_ProjectMemberTeam_project_member_PerformersId_PerformersPro~",
                 table: "ProjectMemberTeam",
-                column: "PerformersId",
+                columns: new[] { "PerformersId", "PerformersProjectId" },
                 principalTable: "project_member",
-                principalColumn: "Id",
+                principalColumns: new[] { "Id", "ProjectId" },
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(

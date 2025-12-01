@@ -9,15 +9,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Gantt_Chart_Backend.Services.Implementations;
 
-public class JwtProvider : IJwtProvider
+public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {
-    private readonly JwtOptions _options;
+    private readonly JwtOptions _options = options.Value;
 
-    public JwtProvider(IOptions<JwtOptions> options)
-    {
-        _options = options.Value;
-    }
-    
     public string GenerateToken(User user)
     {
         Claim[] claims = 

@@ -1,4 +1,5 @@
-﻿using Gantt_Chart_Backend.Data.Models;
+﻿using Gantt_Chart_Backend.Data.Enums;
+using Gantt_Chart_Backend.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,7 +22,9 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
             .IsRequired();
 
         builder.Property(pm => pm.Role)
-            //.HasConversion<string>()
+            .HasConversion(
+                r => r.ToString(),
+                r => (Role)Enum.Parse(typeof(Role), r))
             .IsRequired();
             
         builder.HasOne(pm => pm.User)
