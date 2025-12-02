@@ -83,14 +83,16 @@ public class TaskService : ITaskService
     public async Task RemoveTaskDependence(DependenceDto depDto)
     {
         var task = await _dbcontext.Tasks
+            .Include(t => t.Dependencies)
             .FirstOrDefaultAsync(t => t.Id == depDto.ParentId)
             ?? throw new NotFoundException();
         
         var dep = await _dbcontext.Dependences
-            .FirstOrDefaultAsync(d => d.ParentId == depDto.ParentId)
+            .FirstOrDefaultAsync(d => d.ParentId == depDto.ParentId 
+                                      && d.ChildId == depDto.ChildId)
             ?? throw new NotFoundException();
         
-        task?.Dependencies.Remove(Dependence.FromDto(depDto));
+        task?.Dependencies.Remove(dep);
         
         await _dbcontext.SaveChangesAsync();
     }
