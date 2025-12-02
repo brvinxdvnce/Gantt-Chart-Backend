@@ -17,9 +17,28 @@ public class Dependence
     {
         return new Dependence
         {
+            Id = Guid.NewGuid(),
             ChildId = dto.ChildId,
             ParentId = dto.ParentId,
             Type = dto.Type
         };
-    } 
+    }
+
+    public bool Completed()
+    {
+        return Type switch
+        {
+            DependencyType.FS => ChildTask.EndTime <= ParentTask.StartTime 
+                                 && ChildTask.IsCompleted,
+            
+            DependencyType.SS => ParentTask.StartTime >= ChildTask.EndTime,
+            
+            DependencyType.FF => ParentTask.EndTime >= ChildTask.EndTime 
+                                 && ChildTask.IsCompleted,
+            
+            DependencyType.SF => ParentTask.EndTime >= ChildTask.StartTime,
+            
+            _ => false
+        };
+    }
 }

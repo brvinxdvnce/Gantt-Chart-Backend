@@ -74,25 +74,38 @@ public class TaskService : ITaskService
     
     public async Task AddTaskDependence(DependenceDto depDto)
     {
-        var task = await _dbcontext.Tasks.FirstOrDefaultAsync(t => t.Id == depDto.ParentId);
-        task?.Dependencies.Add(Dependence.FromDto(depDto));
+        if (depDto.ChildId == depDto.ParentId)
+            throw new InvalidOperationException();
+
+        var parentExists = await _dbcontext.Tasks
+            .FirstOrDefaultAsync(t => t.Id == depDto.ParentId);
+        
+        var childExists = await _dbcontext.Tasks
+            .FirstOrDefaultAsync(t => t.Id == depDto.ChildId);
+    
+        if (parentExists is null || childExists is null)
+            throw new NotFoundException();
+
+        var exists = await _dbcontext.Dependences
+            .FirstOrDefaultAsync(t => t.ParentId == depDto.ParentId
+                                      && t.ChildId == depDto.ChildId);
+        
+        if (exists != null) 
+            throw new DependenceAlreadyExistsException();
+        
+        _dbcontext.Dependences.Add(Dependence.FromDto(depDto));
         
         await _dbcontext.SaveChangesAsync();
     }
 
     public async Task RemoveTaskDependence(DependenceDto depDto)
     {
-        var task = await _dbcontext.Tasks
-            .Include(t => t.Dependencies)
-            .FirstOrDefaultAsync(t => t.Id == depDto.ParentId)
-            ?? throw new NotFoundException();
-        
         var dep = await _dbcontext.Dependences
             .FirstOrDefaultAsync(d => d.ParentId == depDto.ParentId 
                                       && d.ChildId == depDto.ChildId)
             ?? throw new NotFoundException();
         
-        task?.Dependencies.Remove(dep);
+        _dbcontext.Dependences.Remove(dep);
         
         await _dbcontext.SaveChangesAsync();
     }
@@ -133,5 +146,20 @@ public class TaskService : ITaskService
             task.Teams.Remove(team);
         }
         await _dbcontext.SaveChangesAsync();
+    }
+
+    public async Task<(string, bool)> SetTaskStatus(Guid taskId, bool status)
+    {
+        var task = await _dbcontext.Tasks.FirstOrDefaultAsync(t => t.Id == taskId)
+            ?? throw new NotFoundException();
+        
+        if (!task.CanBeCompleted())
+            return ("Task can't be completed", false);
+
+        task.IsCompleted = status;
+        
+        await _dbcontext.SaveChangesAsync();
+        
+        return ("Task has been completed", true);
     }
 }

@@ -17,5 +17,13 @@ public class ProjectTask
     public List<Comment> Comments { get; set; } = new List<Comment>();
     
     public Project Project { get; set; }
+
+    public bool CanBeCompleted()
+    {
+        if (Dependencies is null || Dependencies.Count == 0) 
+            return true;
+        
+        return Dependencies.All(d => d.Completed());
+    }
 }
 

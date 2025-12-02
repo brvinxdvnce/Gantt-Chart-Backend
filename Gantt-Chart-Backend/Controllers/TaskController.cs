@@ -60,7 +60,7 @@ public class TaskController : ControllerBase
         await _taskService.DeleteTask(taskId);
         return Ok();
     }
-
+    
     [HttpPatch]
     [Route("{taskId}")]
     public async Task<IActionResult> UpdateTask(
@@ -71,13 +71,46 @@ public class TaskController : ControllerBase
         return Ok();
     }
     
+    [HttpPatch]
+    [Route("{taskId}/status")]
+    public async Task<IActionResult> SetTaskStatus(
+        [FromRoute] Guid taskId,
+        [FromBody] bool status)
+    {
+        try
+        {
+            var (message, success) = await _taskService.SetTaskStatus(taskId, status);
+            
+            return Ok(new {message, success});
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+    
     [HttpPost]
     [Route("{taskId}/dependence")]
     public async Task<IActionResult> AddTaskDependence(
         [FromBody] DependenceDto dep)
     {
-        await _taskService.AddTaskDependence(dep);
-        return Ok();
+        try
+        {
+            await _taskService.AddTaskDependence(dep);
+            return Ok();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
+        catch (DependenceAlreadyExistsException ex)
+        {
+            return Ok();
+        }
     }
 
     [HttpDelete]

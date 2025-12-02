@@ -35,17 +35,21 @@ public class ProjectService : IProjectService
             Teams = new List<Team>(),
         };
         
-        _dbcontext.Projects.Add(newProject);
-        
-        await _dbcontext.SaveChangesAsync();
-        
-        /*
         var rootTask = new ProjectTask
         {
             Id = Guid.NewGuid(),
-            Name = $"{project.Name}",
+            Name = project.Name,
             ProjectId = newProject.Id,
-        };*/
+            IsCompleted = false,
+            EndTime = newProject.DeadLine,
+            StartTime = newProject.DeadLine.AddDays(-1),
+        };
+
+        newProject.RootTask = rootTask;
+        
+        _dbcontext.Projects.Add(newProject);
+        
+        await _dbcontext.SaveChangesAsync();
         
         await _teamService.AddUserToProject(project.CreatorId, newProject.Id);
         await _teamService.SetUserRoleInProject(project.CreatorId, newProject.Id, Role.Admin);
@@ -98,7 +102,7 @@ public class ProjectService : IProjectService
             ?? throw new NotFoundException();
         
         p.Name = projectDto.Name;
-        p.DeadLine = projectDto.DeadLine;
+        p.DeadLine = projectDto.DeadLine ?? p.DeadLine;
         p.CreatorId = projectDto.CreatorId;
         p.RootTask = projectDto.RootTask;
         p.Members = projectDto.Members;
@@ -125,14 +129,11 @@ public class ProjectService : IProjectService
             .Include(p => p.Members)
             .Include(p => p.Teams)
             .Include(p => p.Tasks)
+                .ThenInclude(t => t.Dependencies)
+            .Include(p => p.Creator)
+            .Include(p => p.RootTask)
             .FirstOrDefaultAsync(p=> p.Id == projectId)
             ?? throw new NotFoundException();
-        
-        /*
-        var user = project.Members
-            .FirstOrDefault(m => m.Id == userId)
-            ?? throw new ForbidException();
-            */
         
         var projectInfo = new ProjectOnLoadDto
         (
