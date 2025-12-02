@@ -122,6 +122,9 @@ public class ProjectService : IProjectService
     {
         var project =  await _dbcontext.Projects
             .AsNoTracking()
+            .Include(p => p.Members)
+            .Include(p => p.Teams)
+            .Include(p => p.Tasks)
             .FirstOrDefaultAsync(p=> p.Id == projectId)
             ?? throw new NotFoundException();
         

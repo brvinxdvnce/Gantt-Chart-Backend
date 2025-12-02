@@ -30,6 +30,7 @@ public class TaskService : ITaskService
         {
             Id = Guid.NewGuid(),
             Name = task.Name ?? throw new ArgumentException(),
+            ProjectId = task.ProjectId,
             Description = task.Description ?? "",
             IsCompleted = task.IsCompleted ?? false,
             Dependencies = task.Dependencies ?? new List<Dependence>(),

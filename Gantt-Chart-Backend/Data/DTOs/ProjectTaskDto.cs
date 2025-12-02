@@ -3,7 +3,7 @@
 namespace Gantt_Chart_Backend.Data.DTOs;
 
 public record ProjectTaskDto(
-    Guid? ProjectId,
+    Guid ProjectId,
     string? Name,
     string? Description,
     bool? IsCompleted,
