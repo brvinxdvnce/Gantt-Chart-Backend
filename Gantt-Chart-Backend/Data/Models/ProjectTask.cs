@@ -3,6 +3,11 @@ namespace Gantt_Chart_Backend.Data.Models;
 
 public class ProjectTask
 {
+    /*public ProjectTask(string name)
+    {
+        
+    }*/
+    
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
