@@ -8,7 +8,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.ToTable("сomment");
+        builder.ToTable("comment");
 
         builder.HasKey(c => c.Id);
             
@@ -21,6 +21,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.HasOne(s => s.Task)
             .WithMany(t => t.Comments)
             .HasForeignKey(c => c.TaskId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

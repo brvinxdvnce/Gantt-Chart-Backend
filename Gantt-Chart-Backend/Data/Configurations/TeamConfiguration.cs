@@ -23,6 +23,9 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
 
         builder.HasMany(p => p.Performers)
             .WithMany();
-
+        
+        builder
+            .Property(t => t.ProjectId)
+            .IsRequired();
     }
 }

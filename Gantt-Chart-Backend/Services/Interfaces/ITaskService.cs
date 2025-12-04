@@ -15,4 +15,7 @@ public interface ITaskService
     public Task AddTaskPerformer(Guid taskId, Guid userId, int n);
     public Task RemoveTaskPerformer(Guid taskId, Guid userId, int n);
     public Task<(string, bool)> SetTaskStatus (Guid taskId, bool status);
+    public Task<Guid> AddTaskComment (CommentDto commentDto);
+    public Task RemoveTaskComment (Guid taskId, Guid commentId);
+    
 }

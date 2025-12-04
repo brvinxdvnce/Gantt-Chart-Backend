@@ -26,19 +26,22 @@ public class TaskService : ITaskService
 
     public async Task<Guid> AddTask(ProjectTaskDto task)
     {
-        var newTask = new ProjectTask()
-        {
-            Id = Guid.NewGuid(),
-            Name = task.Name ?? throw new ArgumentException(),
-            ProjectId = task.ProjectId,
-            Description = task.Description ?? "",
+        var newTask = new ProjectTask(
+            task.Name ?? throw new ArgumentException(),
+            task.ProjectId,
+            task.StartTime,
+            task.EndTime,
+            task.Description
+        );
+        
+        /*Description = task.Description ?? "",
             IsCompleted = task.IsCompleted ?? false,
             Dependencies = task.Dependencies ?? new List<Dependence>(),
             StartTime = task.StartTime ??  DateTime.UtcNow,
-            EndTime = task.EndTime ??  DateTime.UtcNow.AddDays(1),
-        };
+            EndTime = task.EndTime ??  DateTime.UtcNow.AddDays(1),*/
         
         await _dbcontext.Tasks.AddAsync(newTask);
+        
         await _dbcontext.SaveChangesAsync();
         
         return newTask.Id;
@@ -161,5 +164,39 @@ public class TaskService : ITaskService
         await _dbcontext.SaveChangesAsync();
         
         return ("Task has been completed", true);
+    }
+
+    public async Task<Guid> AddTaskComment(CommentDto commentDto)
+    {
+        var task = await _dbcontext.Tasks
+            .Include(task => task.Comments)
+            .FirstOrDefaultAsync(t => t.Id == commentDto.TaskId) 
+                   ?? throw new NotFoundException();
+                   
+    
+        var newComment = new Comment (
+            commentDto.TaskId,
+            commentDto.AuthorId,
+            commentDto.Content,
+            commentDto.CreatedAt ?? DateTime.UtcNow
+            );
+        
+        
+        _dbcontext.Comments.Add(newComment);
+        
+        await _dbcontext.SaveChangesAsync();
+        
+        return newComment.Id;
+    }
+
+    public async Task RemoveTaskComment(Guid taskId, Guid commentId)
+    {
+        var comment = await _dbcontext.Comments
+            .FirstOrDefaultAsync(c => c.Id == commentId && c.TaskId == taskId) 
+                      ?? throw new NotFoundException();
+        
+        _dbcontext.Comments.Remove(comment);
+        
+        await _dbcontext.SaveChangesAsync();
     }
 }

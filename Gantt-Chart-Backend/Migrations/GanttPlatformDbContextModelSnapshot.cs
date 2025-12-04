@@ -31,6 +31,9 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("AuthorProjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
@@ -43,9 +46,9 @@ namespace Gantt_Chart_Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
-
                     b.HasIndex("TaskId");
+
+                    b.HasIndex("AuthorId", "AuthorProjectId");
 
                     b.ToTable("Comments");
                 });
@@ -98,7 +101,7 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("DeadLine")
+                    b.Property<DateTime>("DeadLine")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -265,15 +268,15 @@ namespace Gantt_Chart_Backend.Migrations
 
             modelBuilder.Entity("Gantt_Chart_Backend.Data.Models.Comment", b =>
                 {
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.User", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", "Task")
                         .WithMany("Comments")
                         .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId", "AuthorProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

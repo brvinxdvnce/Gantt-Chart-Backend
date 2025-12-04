@@ -35,20 +35,21 @@ public class ProjectService : IProjectService
             Teams = new List<Team>(),
         };
         
-        var rootTask = new ProjectTask
-        {
-            Id = Guid.NewGuid(),
-            Name = project.Name,
-            ProjectId = newProject.Id,
-            IsCompleted = false,
-            EndTime = newProject.DeadLine,
-            StartTime = newProject.DeadLine.AddDays(-1),
-        };
-
-        newProject.RootTask = rootTask;
-        
         _dbcontext.Projects.Add(newProject);
+        await _dbcontext.SaveChangesAsync();
         
+        var rootTask = new ProjectTask
+        (
+            project.Name,
+            newProject.Id,
+            newProject.DeadLine.AddDays(-1),
+            newProject.DeadLine
+        );
+
+        _dbcontext.Tasks.Add(rootTask);
+        await  _dbcontext.SaveChangesAsync();
+         
+        newProject.RootTaskId = rootTask.Id;
         await _dbcontext.SaveChangesAsync();
         
         await _teamService.AddUserToProject(project.CreatorId, newProject.Id);

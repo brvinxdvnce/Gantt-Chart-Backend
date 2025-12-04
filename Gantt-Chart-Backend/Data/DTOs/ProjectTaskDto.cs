@@ -4,7 +4,7 @@ namespace Gantt_Chart_Backend.Data.DTOs;
 
 public record ProjectTaskDto(
     Guid ProjectId,
-    string? Name,
+    string Name,
     string? Description,
     bool? IsCompleted,
     List<Dependence>?  Dependencies,

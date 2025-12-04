@@ -45,17 +45,12 @@ namespace Gantt_Chart_Backend.Migrations
                     TaskId = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AuthorProjectId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_user_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "user",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,7 +107,7 @@ namespace Gantt_Chart_Backend.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
                     RootTaskId = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeadLine = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    DeadLine = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,9 +206,9 @@ namespace Gantt_Chart_Backend.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_AuthorId",
+                name: "IX_Comments_AuthorId_AuthorProjectId",
                 table: "Comments",
-                column: "AuthorId");
+                columns: new[] { "AuthorId", "AuthorProjectId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_TaskId",
@@ -286,6 +281,14 @@ namespace Gantt_Chart_Backend.Migrations
                 table: "user",
                 column: "Email",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Comments_project_member_AuthorId_AuthorProjectId",
+                table: "Comments",
+                columns: new[] { "AuthorId", "AuthorProjectId" },
+                principalTable: "project_member",
+                principalColumns: new[] { "Id", "ProjectId" },
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Comments_task_TaskId",

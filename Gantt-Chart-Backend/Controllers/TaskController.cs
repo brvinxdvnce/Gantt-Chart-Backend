@@ -168,4 +168,55 @@ public class TaskController : ControllerBase
         await _taskService.RemoveTaskPerformer(taskId, id, 1);
         return Ok();
     }
+
+
+
+
+    /*[HttpGet]
+    [Route("{taskId}/comments")]
+    public async Task<IActionResult> GetTaskComments(
+        [FromRoute] Guid taskId)
+    {
+        try
+        {
+            return Ok(await _taskService.GetTaskComment(taskId));
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
+    }*/
+    
+    [HttpPost]
+    [Route("{taskId}/comments")]
+    public async Task<IActionResult> AddTaskComment(
+        [FromRoute] Guid taskId,
+        [FromBody] CommentDto commentDto)
+    {
+        try
+        {
+            return Ok(await _taskService.AddTaskComment(commentDto));
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
+    }
+    
+    [HttpDelete]
+    [Route("{taskId}/comments")]
+    public async Task<IActionResult> RemoveTaskComment(
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid commentId)
+    {
+        try
+        {
+            await _taskService.RemoveTaskComment(taskId, commentId);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
+    }
 }
