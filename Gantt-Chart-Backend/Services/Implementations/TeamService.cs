@@ -62,6 +62,7 @@ public class TeamService : ITeamService
     public async Task AddUserToProject(Guid userId, Guid projectId)
     {
         var project = _dbcontext.Projects
+             .Include(p => p.Members)
              .FirstOrDefault(t => t.Id == projectId) 
              ?? throw new NotFoundException("ProjectNotFound");
         
@@ -69,6 +70,9 @@ public class TeamService : ITeamService
               .FirstOrDefault(u => u.Id == userId)
               ??  throw new NotFoundException("UserNotFound");
 
+        if (project.Members.Any(u => u.Id == userId))
+            return;
+        
         var pm = new ProjectMember
         {
             Id = user.Id,

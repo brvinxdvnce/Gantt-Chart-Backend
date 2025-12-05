@@ -14,6 +14,7 @@ public class GanttPlatformDbContext(DbContextOptions<GanttPlatformDbContext> opt
     public DbSet<ProjectTask> Tasks { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Dependence> Dependences { get; set; }
+    public DbSet<InviteCode> InviteCodes { get; set; }
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +26,7 @@ public class GanttPlatformDbContext(DbContextOptions<GanttPlatformDbContext> opt
         modelBuilder.ApplyConfiguration(new TaskConfiguration          ());
         modelBuilder.ApplyConfiguration(new DependenceConfiguration    ());
         modelBuilder.ApplyConfiguration(new PermissionConfiguration    ());
+        modelBuilder.ApplyConfiguration(new InviteCodeConfiguration    ());
         
     }
 }

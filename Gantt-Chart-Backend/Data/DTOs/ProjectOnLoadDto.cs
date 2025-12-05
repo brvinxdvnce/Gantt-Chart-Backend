@@ -12,5 +12,6 @@ public record ProjectOnLoadDto
     ProjectTask RootTask,
     List<ProjectTask> Tasks,
     List<ProjectMember> Members,
-    List<Team> Teams
+    List<Team> Teams,
+    List<InviteCodeResponseDto> InviteCodes
 );

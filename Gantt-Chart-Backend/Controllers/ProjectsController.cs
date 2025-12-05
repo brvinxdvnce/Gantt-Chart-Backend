@@ -17,11 +17,17 @@ namespace Gantt_Chart_Backend.Controllers;
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
+    private readonly IInviteService _inviteService;
     private readonly ITeamService _teamService;
 
-    public ProjectsController(IProjectService projectService, ITeamService teamService)
+    public ProjectsController(
+        IProjectService projectService, 
+        ITeamService teamService,
+        IInviteService inviteService
+        )
     {
         _projectService = projectService;
+        _inviteService = inviteService;
         _teamService = teamService;
     }
 
@@ -152,5 +158,22 @@ public class ProjectsController : ControllerBase
     {
         await _teamService.SetUserRoleInProject(userId, projectId, role);
         return NoContent();
+    }
+
+    [HttpGet]
+    [Route("/invite/{inviteCode}")]
+    public async Task<IActionResult> InviteUserToProject(
+        [FromRoute] string inviteCode,
+        [FromQuery] Guid userId)
+    {
+        try
+        {
+            await _inviteService.AddUserToProjectByInviteCode(userId, inviteCode);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }

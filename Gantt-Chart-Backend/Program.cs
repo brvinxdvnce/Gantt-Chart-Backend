@@ -32,6 +32,8 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IInviteService, InviteService>();
+
 
 builder.Services.AddScoped<IPasswordHasher,  PasswordHasher>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();

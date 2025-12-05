@@ -11,6 +11,7 @@ public class Project
     public ProjectTask? RootTask { get; set; }
     public List<ProjectTask> Tasks { get; set; }
     public List<ProjectMember> Members { get; set; }
+    public List<InviteCode> InviteCodes { get; set; }
     public List<Team> Teams { get; set; }
     
     public User Creator { get; set; }

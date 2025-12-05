@@ -11,13 +11,16 @@ namespace Gantt_Chart_Backend.Services.Implementations;
 public class ProjectService : IProjectService
 {
     private readonly GanttPlatformDbContext _dbcontext;
+    private readonly IInviteService _inviteService;
     private readonly ITeamService _teamService;
     
     public ProjectService(
         GanttPlatformDbContext dbcontext,
+        IInviteService inviteService,
         ITeamService teamService)
     {
         _teamService =  teamService;
+        _inviteService = inviteService;   
         _dbcontext = dbcontext;
     }
 
@@ -50,6 +53,10 @@ public class ProjectService : IProjectService
         await  _dbcontext.SaveChangesAsync();
          
         newProject.RootTaskId = rootTask.Id;
+        await _dbcontext.SaveChangesAsync();
+
+        var firstCode = new InviteCode(newProject.Id, _inviteService.GenerateCode());
+        await _dbcontext.InviteCodes.AddAsync(firstCode);
         await _dbcontext.SaveChangesAsync();
         
         await _teamService.AddUserToProject(project.CreatorId, newProject.Id);
@@ -131,6 +138,7 @@ public class ProjectService : IProjectService
             .Include(p => p.Teams)
             .Include(p => p.Tasks)
                 .ThenInclude(t => t.Dependencies)
+            .Include(p => p.InviteCodes)
             .Include(p => p.Creator)
             .Include(p => p.RootTask)
             .FirstOrDefaultAsync(p=> p.Id == projectId)
@@ -145,7 +153,8 @@ public class ProjectService : IProjectService
                 project.RootTask,
                 project.Tasks,
                 project.Members,
-                project.Teams
+                project.Teams,
+                project.InviteCodes.Select(InviteCode.ToDto).ToList() ?? new ()
         );
         return projectInfo;
     }
