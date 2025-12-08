@@ -28,14 +28,18 @@ public class Dependence
     {
         return Type switch
         {
-            DependencyType.FS => ChildTask.EndTime <= ParentTask.StartTime 
+            // FS: Parent не может начаться, пока не закончится Child
+            DependencyType.FS => ParentTask.StartTime >= ChildTask.EndTime
                                  && ChildTask.IsCompleted,
             
-            DependencyType.SS => ParentTask.StartTime >= ChildTask.EndTime,
+            // SS: Parent не может начаться раньше Child
+            DependencyType.SS => ParentTask.StartTime >= ChildTask.StartTime,
             
+            // FF: Parent не может завершиться, пока не завершится Child
             DependencyType.FF => ParentTask.EndTime >= ChildTask.EndTime 
                                  && ChildTask.IsCompleted,
             
+            // SF: Parent не может завершиться, пока не начнётся Child
             DependencyType.SF => ParentTask.EndTime >= ChildTask.StartTime,
             
             _ => false

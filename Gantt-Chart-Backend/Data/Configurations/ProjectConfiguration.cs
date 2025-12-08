@@ -19,7 +19,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(p => p.RootTaskId)
             .IsRequired(false);
             
-
+        
         
         builder.HasOne(p => p.Creator)
             .WithMany() 

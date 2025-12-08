@@ -65,8 +65,9 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -152,9 +153,6 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ProjectTaskId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
@@ -162,8 +160,6 @@ namespace Gantt_Chart_Backend.Migrations
                     b.HasKey("Id", "ProjectId");
 
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("ProjectTaskId");
 
                     b.ToTable("project_member", (string)null);
                 });
@@ -213,14 +209,9 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ProjectTaskId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("ProjectTaskId");
 
                     b.HasIndex("LeaderId", "ProjectId");
 
@@ -287,6 +278,39 @@ namespace Gantt_Chart_Backend.Migrations
                     b.HasIndex("PerformersId", "PerformersProjectId");
 
                     b.ToTable("ProjectMemberTeam");
+                });
+
+            modelBuilder.Entity("task_performers_teams", b =>
+                {
+                    b.Property<Guid>("task_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("team_id")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("task_id", "team_id");
+
+                    b.HasIndex("team_id");
+
+                    b.ToTable("task_performers_teams", (string)null);
+                });
+
+            modelBuilder.Entity("task_performers_users", b =>
+                {
+                    b.Property<Guid>("task_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("project_member_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("project_id")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("task_id", "project_member_id", "project_id");
+
+                    b.HasIndex("project_member_id", "project_id");
+
+                    b.ToTable("task_performers", (string)null);
                 });
 
             modelBuilder.Entity("Gantt_Chart_Backend.Data.Models.Comment", b =>
@@ -370,10 +394,6 @@ namespace Gantt_Chart_Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", null)
-                        .WithMany("Performers")
-                        .HasForeignKey("ProjectTaskId");
-
                     b.Navigation("Project");
 
                     b.Navigation("User");
@@ -397,10 +417,6 @@ namespace Gantt_Chart_Backend.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", null)
-                        .WithMany("Teams")
-                        .HasForeignKey("ProjectTaskId");
 
                     b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", "Leader")
                         .WithMany()
@@ -443,6 +459,36 @@ namespace Gantt_Chart_Backend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("task_performers_teams", b =>
+                {
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", null)
+                        .WithMany()
+                        .HasForeignKey("task_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.Team", null)
+                        .WithMany()
+                        .HasForeignKey("team_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("task_performers_users", b =>
+                {
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectTask", null)
+                        .WithMany()
+                        .HasForeignKey("task_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gantt_Chart_Backend.Data.Models.ProjectMember", null)
+                        .WithMany()
+                        .HasForeignKey("project_member_id", "project_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Gantt_Chart_Backend.Data.Models.Project", b =>
                 {
                     b.Navigation("InviteCodes");
@@ -459,10 +505,6 @@ namespace Gantt_Chart_Backend.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Dependencies");
-
-                    b.Navigation("Performers");
-
-                    b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("Gantt_Chart_Backend.Data.Models.User", b =>
