@@ -20,6 +20,10 @@ public class TaskService : ITaskService
     public async Task<ProjectTask> GetTask(Guid taskId)
     {
         return await _dbcontext.Tasks
+            .Include(t => t.Performers)
+            //.Include(t => t.Teams)
+            .Include(t => t.Dependencies)
+            .Include(t => t.Comments)
             .FirstOrDefaultAsync(t => t.Id == taskId) 
                ?? throw new NotFoundException();
     }
