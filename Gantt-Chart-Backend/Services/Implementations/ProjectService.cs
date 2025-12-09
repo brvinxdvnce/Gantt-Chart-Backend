@@ -60,6 +60,9 @@ public class ProjectService : IProjectService
         await _dbcontext.SaveChangesAsync();
         
         await _teamService.AddUserToProject(project.CreatorId, newProject.Id);
+        
+        await _dbcontext.SaveChangesAsync();
+            
         await _teamService.SetUserRoleInProject(project.CreatorId, newProject.Id, Role.Admin);
         
         return newProject.Id;
@@ -70,6 +73,7 @@ public class ProjectService : IProjectService
         var projects = await _dbcontext.Projects
             .AsNoTracking()
             .Include(p => p.Members)
+            .ThenInclude(m => m.User)
             .Include(p => p.Creator)
             .Where(p =>
                p.Members
@@ -81,7 +85,7 @@ public class ProjectService : IProjectService
                    p.Creator.NickName ?? string.Empty,
                    _dbcontext.ProjectMembers 
                        .AsNoTracking()
-                       .FirstOrDefault(u => u.Id == userId).Role
+                       .FirstOrDefault(u => u.Id == userId && u.ProjectId == p.Id).Role
                ))
                .ToListAsync();
 

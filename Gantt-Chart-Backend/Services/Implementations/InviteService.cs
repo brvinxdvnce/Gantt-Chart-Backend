@@ -21,6 +21,7 @@ public class InviteService : IInviteService
         ITeamService teamService
         )
     {
+        _context = context;
         _teamService =  teamService;
     }
     
@@ -29,15 +30,14 @@ public class InviteService : IInviteService
         using var rng = RandomNumberGenerator.Create();
         
         byte[] bytes = new byte[_codeLength];
-
-        StringBuilder code = new StringBuilder();
+        rng.GetBytes(bytes);
+        
+        StringBuilder code = new StringBuilder(_codeLength);
 
         foreach (var value in bytes)
-            code.Append(_inviteCodeSymbols[value % _codeLength]);
-        
+            code.Append(_inviteCodeSymbols[value % _inviteCodeSymbols.Length]);
 
         return code.ToString();
-    
     }
 
     public async Task AddUserToProjectByInviteCode(

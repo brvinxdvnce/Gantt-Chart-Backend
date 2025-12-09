@@ -18,17 +18,22 @@ public class TeamService : ITeamService
         _dbcontext = dbcontext;
     }
     
-    public async Task<Guid> CreateTeam(TeamDto team)
+    public async Task<Guid> CreateTeam(TeamDto teamDto)
     {
-        var newTask = new Team
-        {
-            Id = Guid.NewGuid()
-            //////////////
-        }; 
+        var newTeam = new Team
+        (
+            name: teamDto.Name,
+            teamDto.LeaderId,
+            teamDto.ProjectId
+        ); 
         
-        _dbcontext.Teams.Add(newTask);
+        if (teamDto.Members != null)
+            newTeam.Performers.AddRange(teamDto.Members);
+        
+        _dbcontext.Teams.Add(newTeam);
         await _dbcontext.SaveChangesAsync();
-        return newTask.Id;
+        
+        return newTeam.Id;
     }
 
     public async Task AddTeamMember(Guid teamId, Guid memberId)
@@ -107,7 +112,7 @@ public class TeamService : ITeamService
     public async Task SetUserRoleInProject(Guid userId, Guid projectId, Role role)
     {
         var user = _dbcontext.ProjectMembers
-            .FirstOrDefault(u => u.Id == userId)
+            .FirstOrDefault(u => u.Id == userId &&  u.ProjectId == projectId)
             ?? throw new NotFoundException();
         
         user.Role = role;

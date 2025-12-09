@@ -9,3 +9,4 @@ public record ProjectCardDto (
     string CreatorNickName,
     Role CurrentUserRole
     );
+    

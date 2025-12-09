@@ -3,7 +3,9 @@
 namespace Gantt_Chart_Backend.Data.DTOs;
 
 public record TeamDto(
-    Guid Id,
+    string Name,
+    Guid ProjectId,
     Guid LeaderId,
-    List<ProjectMember> Members
+    List<ProjectMember>? Members,
+    Guid? Id
     );
