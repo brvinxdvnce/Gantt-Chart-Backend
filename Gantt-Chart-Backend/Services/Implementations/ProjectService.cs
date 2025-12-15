@@ -133,35 +133,37 @@ public class ProjectService : IProjectService
         await _dbcontext.SaveChangesAsync();
     }
     
-    public async Task<ProjectOnLoadDto> GetFullProjectInfo 
-        (Guid projectId, Guid userId)
+    public async Task<ProjectOnLoadDto> GetFullProjectInfo (Guid projectId, Guid userId)
     {
         var project =  await _dbcontext.Projects
-            .AsNoTracking()
-            .Include(p => p.Members)
-            .Include(p => p.Teams)
-            .Include(p => p.Tasks)
-                .ThenInclude(t => t.Dependencies)
-            .Include(p => p.InviteCodes)
-            .Include(p => p.Creator)
-            .Include(p => p.RootTask)
-            .FirstOrDefaultAsync(p=> p.Id == projectId)
-            ?? throw new NotFoundException();
-        
-        var projectInfo = new ProjectOnLoadDto
-        (
-                project.Id,
-                project.Name,
-                project.Creator,
-                project.DeadLine,
-                project.RootTask,
-                project.Tasks,
-                project.Members,
-                project.Teams,
-                project.InviteCodes.Select(InviteCode.ToDto).ToList() ?? new ()
+                           .AsNoTracking()
+                           .Include(p => p.Members)
+                           .ThenInclude(m => m.User)             
+                           .Include(p => p.Teams)
+                           .Include(p => p.Tasks)
+                           .ThenInclude(t => t.Dependencies)
+                           .Include(p => p.Tasks)
+                           .ThenInclude(t => t.Performers)   
+                           .Include(p => p.InviteCodes)
+                           .Include(p => p.Creator)
+                           .Include(p => p.RootTask)
+                           .FirstOrDefaultAsync(p=> p.Id == projectId)
+                       ?? throw new NotFoundException();
+    
+        var projectInfo = new ProjectOnLoadDto(
+            project.Id,
+            project.Name,
+            project.Creator,
+            project.DeadLine,
+            project.RootTask,
+            project.Tasks,
+            project.Members,
+            project.Teams,
+            project.InviteCodes.Select(InviteCode.ToDto).ToList() ?? new ()
         );
         return projectInfo;
     }
+
 
     public async Task SetProjectRootTask(Guid projectId, Guid taskId)
     {
