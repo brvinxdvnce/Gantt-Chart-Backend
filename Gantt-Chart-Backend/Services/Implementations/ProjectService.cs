@@ -137,16 +137,19 @@ public class ProjectService : IProjectService
         (Guid projectId, Guid userId)
     {
         var project =  await _dbcontext.Projects
-            .AsNoTracking()
-            .Include(p => p.Members)
-            .Include(p => p.Teams)
-            .Include(p => p.Tasks)
-                .ThenInclude(t => t.Dependencies)
-            .Include(p => p.InviteCodes)
-            .Include(p => p.Creator)
-            .Include(p => p.RootTask)
-            .FirstOrDefaultAsync(p=> p.Id == projectId)
-            ?? throw new NotFoundException();
+                           .AsNoTracking()
+                           .Include(p => p.Members)
+                           .ThenInclude(m => m.User)             
+                           .Include(p => p.Teams)
+                           .Include(p => p.Tasks)
+                           .ThenInclude(t => t.Dependencies)
+                           .Include(p => p.Tasks)
+                           .ThenInclude(t => t.Performers)   
+                           .Include(p => p.InviteCodes)
+                           .Include(p => p.Creator)
+                           .Include(p => p.RootTask)
+                           .FirstOrDefaultAsync(p=> p.Id == projectId)
+                       ?? throw new NotFoundException();
         
         var projectInfo = new ProjectOnLoadDto
         (

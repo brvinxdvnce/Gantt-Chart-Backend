@@ -140,16 +140,22 @@ public class TaskService : ITaskService
     public async Task RemoveTaskPerformer(Guid taskId, Guid userId, int n)
     {
         var task = _dbcontext.Tasks
+            .Include(t => t.Performers)
+            .Include(t => t.Teams)
             .FirstOrDefault(t => t.Id == taskId) ?? throw new NotFoundException();
         
         if (n == 0)
         {
-            var performer = _dbcontext.ProjectMembers.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+            var performer = _dbcontext.ProjectMembers
+                .FirstOrDefault(u => u.Id == userId) 
+                            ?? throw new NotFoundException();
             task.Performers.Remove(performer);
         }
         else
         {
-            var team = _dbcontext.Teams.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException();
+            var team = _dbcontext.Teams
+                .FirstOrDefault(u => u.Id == userId) 
+                       ?? throw new NotFoundException();
             task.Teams.Remove(team);
         }
         await _dbcontext.SaveChangesAsync();
