@@ -1,4 +1,5 @@
-﻿using Gantt_Chart_Backend.Data.DbContext;
+﻿using System.Security.Authentication;
+using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Models;
 using Gantt_Chart_Backend.Exceptions;
@@ -67,14 +68,46 @@ public class UsersService : IUsersService
         throw new NotImplementedException();
     }
 
-    public Task UpdateUser()
+
+    public async Task UpdateUserData(UpdateProfileDto userDto, Guid userId)
     {
-        throw new NotImplementedException();
+        if (userDto == null)
+            throw new ArgumentNullException();
+        
+        var user = await _dbcontext.Users
+            .FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new NotFoundException();
+        
+        if (userDto.CurrentPassword is null || 
+            !_passwordHasher.VerifyPassword(userDto.CurrentPassword, user.PasswordHash)) 
+            throw new InvalidCredentialsException();
+        
+        user.Email = userDto.Email ?? user.Email;
+        user.NickName = userDto.NickName ?? user.NickName;
+
+        try
+        {
+            await _dbcontext.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new ConflictException("Email already in use");
+        }
     }
 
-    public Task UpdateUser(UserRequestDto userDto)
+    public async Task UpdateUserPassword(UpdateProfileDto userRequestDto, Guid userId)
     {
-        throw new NotImplementedException();
+        var user = await _dbcontext.Users
+                   .FirstOrDefaultAsync(u => u.Id == userId)
+                   ?? throw new NotFoundException("User not found");
+        
+        if (_passwordHasher.VerifyPassword(userRequestDto.CurrentPassword, user.PasswordHash)
+            && userRequestDto.NewPassword is not null)
+            user.PasswordHash = _passwordHasher.GeneratePasswordHash(userRequestDto.NewPassword);
+        else 
+            throw new InvalidCredentialException();
+        
+        await _dbcontext.SaveChangesAsync();
     }
 
     public async Task<ICollection<Permission>> GetUserPermissionsByName(string name)

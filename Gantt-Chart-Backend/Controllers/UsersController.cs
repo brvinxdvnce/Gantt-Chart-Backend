@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Security.Authentication;
+using System.Security.Claims;
 using Gantt_Chart_Backend.Data.DbContext;
 using Gantt_Chart_Backend.Data.DTOs;
 using Gantt_Chart_Backend.Data.Models;
@@ -72,6 +73,54 @@ public class UsersController : ControllerBase
         catch (InvalidCredentialsException ex)
         {
             return Unauthorized(ex.Message);
+        }
+    }
+
+    [HttpPatch]
+    [Route("{userId}/profile")]
+    public async Task<IActionResult> UpdateProfile(
+        [FromRoute] Guid userId,
+        [FromBody] UpdateProfileDto userRequestDto
+        )
+    {
+        try
+        {
+            await _usersService.UpdateUserData(userRequestDto, userId);
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidCredentialsException ex)
+        {
+            return Unauthorized(ex.Message);
+        }
+        catch (ConflictException ex)
+        {
+            return Conflict(ex.Message);
+        }
+    }
+
+    [HttpPatch]
+    [Route("{userId}/password")]
+    public async Task<IActionResult> UpdatePassword(
+        [FromRoute] Guid userId,
+        [FromBody] UpdateProfileDto dto
+        )
+    {
+        try
+        {
+            await _usersService.UpdateUserPassword(dto, userId);
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidCredentialException ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }
