@@ -2,5 +2,8 @@
 
 public enum DependencyType
 {
-    
+    SS,
+    SF,
+    FS,
+    FF
 }
